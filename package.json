@@ -1,0 +1,10 @@
+{
+	"name": "Pheo",
+	"description": "A music player application based on modern web technologies",
+	"main": "./html/index.html",
+
+	"window": {
+		"toolbar" : false,
+		"frame" : false
+	}
+}

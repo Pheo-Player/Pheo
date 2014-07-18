@@ -1,0 +1,46 @@
+{
+  "name": "Pheo",
+  "version": "0.0.0",
+  "authors": [
+    "Simon Welker <simon.welker@outlook.com>"
+  ],
+  "description": "A music player application based on modern web technologies",
+  "main": "html/index.html",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "homepage": "http://pheo.org",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "core-animated-pages": "Polymer/core-animated-pages#~0.3.4",
+    "core-collapse": "Polymer/core-collapse#~0.3.4",
+    "core-drawer-panel": "Polymer/core-drawer-panel#~0.3.4",
+    "core-header-panel": "Polymer/core-header-panel#~0.3.4",
+    "core-menu-button": "Polymer/core-menu-button#~0.3.4",
+    "core-menu": "Polymer/core-menu#~0.3.4",
+    "core-splitter": "Polymer/core-splitter#~0.3.4",
+    "core-style": "Polymer/core-style#~0.3.4",
+    "core-tooltip": "Polymer/core-tooltip#~0.3.4",
+    "paper-button": "Polymer/paper-button#~0.3.4",
+    "paper-checkbox": "Polymer/paper-checkbox#~0.3.4",
+    "paper-dialog": "Polymer/paper-dialog#~0.3.4",
+    "paper-fab": "Polymer/paper-fab#~0.3.4",
+    "paper-input": "Polymer/paper-input#~0.3.4",
+    "paper-item": "Polymer/paper-item#~0.3.4",
+    "paper-menu-button": "Polymer/paper-menu-button#~0.3.4",
+    "paper-progress": "Polymer/paper-progress#~0.3.4",
+    "paper-radio-group": "Polymer/paper-radio-group#~0.3.4",
+    "paper-slider": "Polymer/paper-slider#~0.3.4",
+    "paper-tabs": "Polymer/paper-tabs#~0.3.4",
+    "paper-toast": "Polymer/paper-toast#~0.3.4",
+    "paper-toggle-button": "Polymer/paper-toggle-button#~0.3.4"
+  }
+}

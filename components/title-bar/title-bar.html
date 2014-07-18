@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="title-bar">
+	<template>
+		<link rel="stylesheet" href="title-bar.css">
+
+		<div id="titlebar">
+			<div id="drag"></div>
+
+			<button on-click="{{minimizeWindow}}" id="minimize"></button>
+			<button on-click="{{maximizeWindow}}" id="maximize"></button>
+			<button on-click="{{closeWindow}}" id="close"></button>
+		</div>
+	</template>
+	<script>
+		var gui = require("nw.gui");
+		var win = gui.Window.get();
+		var maximized = false;
+
+		Polymer({
+			closeWindow: function() {
+				win.close();
+			},
+			maximizeWindow: function() {
+				if(maximized)
+					win.unmaximize();
+				else
+					win.maximize();
+
+				maximized = !maximized;
+			},
+			minimizeWindow: function() {
+				win.minimize();
+			}
+		});
+	</script>
+</polymer-element>
