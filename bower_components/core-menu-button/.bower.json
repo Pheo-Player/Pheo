@@ -18,6 +18,5 @@
   },
   "_source": "git://github.com/Polymer/core-menu-button.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/core-menu-button",
-  "_direct": true
+  "_originalSource": "Polymer/core-menu-button"
 }

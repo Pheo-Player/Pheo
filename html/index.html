@@ -25,13 +25,14 @@
 	<style>
 	html {
 		margin: 0; padding: 0;
-		height: 100%;
 	}
 	body {
 		background-color: #eee;
 		color: #2d2d2d;
 		font-family: 'robotoregular', sans-serif;
 		padding: 35px 20px 20px 20px;
+
+		overflow: scroll;
 	}
 	#cover {
 		border: 1px solid #ccc;
@@ -71,6 +72,7 @@
 	</section>
 
 	<input style="display:none;" id="fileDialog" type="file" />
+	
 	<script>
 		var player, file, asset;
 		var isPlaying = false, durationSet = false;

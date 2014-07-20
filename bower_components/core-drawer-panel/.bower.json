@@ -15,6 +15,5 @@
   },
   "_source": "git://github.com/Polymer/core-drawer-panel.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/core-drawer-panel",
-  "_direct": true
+  "_originalSource": "Polymer/core-drawer-panel"
 }

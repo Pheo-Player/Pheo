@@ -15,6 +15,5 @@
   },
   "_source": "git://github.com/Polymer/paper-fab.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/paper-fab",
-  "_direct": true
+  "_originalSource": "Polymer/paper-fab"
 }

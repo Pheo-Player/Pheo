@@ -16,6 +16,5 @@
   },
   "_source": "git://github.com/Polymer/core-animated-pages.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/core-animated-pages",
-  "_direct": true
+  "_originalSource": "Polymer/core-animated-pages"
 }

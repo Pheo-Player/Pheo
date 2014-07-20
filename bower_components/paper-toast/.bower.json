@@ -17,6 +17,5 @@
   },
   "_source": "git://github.com/Polymer/paper-toast.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/paper-toast",
-  "_direct": true
+  "_originalSource": "Polymer/paper-toast"
 }

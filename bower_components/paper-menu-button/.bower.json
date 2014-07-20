@@ -24,6 +24,5 @@
   },
   "_source": "git://github.com/Polymer/paper-menu-button.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/paper-menu-button",
-  "_direct": true
+  "_originalSource": "Polymer/paper-menu-button"
 }

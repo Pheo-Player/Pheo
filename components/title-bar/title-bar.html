@@ -5,17 +5,21 @@
 		<link rel="stylesheet" href="title-bar.css">
 
 		<div id="titlebar">
-			<div id="drag"></div>
+			<div id="drag">
+				<content></content>
+			</div>
 
-			<button on-click="{{minimizeWindow}}" id="minimize"></button>
-			<button on-click="{{maximizeWindow}}" id="maximize"></button>
-			<button on-click="{{closeWindow}}" id="close"></button>
+			<div id="actions">
+				<button on-click="{{minimizeWindow}}" id="minimize"></button>
+				<button on-click="{{maximizeWindow}}" id="maximize"></button>
+				<button on-click="{{closeWindow}}" id="close"></button>
+			</div>
 		</div>
 	</template>
 	<script>
-		var gui = require("nw.gui");
-		var win = gui.Window.get();
-		var maximized = false;
+		//var gui = require("nw.gui");
+		//var win = gui.Window.get();
+		//var maximized = false;
 
 		Polymer({
 			closeWindow: function() {

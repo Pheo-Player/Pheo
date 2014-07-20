@@ -16,6 +16,5 @@
   },
   "_source": "git://github.com/Polymer/paper-radio-group.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/paper-radio-group",
-  "_direct": true
+  "_originalSource": "Polymer/paper-radio-group"
 }

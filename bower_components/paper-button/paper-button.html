@@ -53,7 +53,7 @@ To style the background, text and hover color, apply the `background` and
 <link href="../paper-ripple/paper-ripple.html" rel="import">
 <link href="../paper-shadow/paper-shadow.html" rel="import">
 
-<polymer-element name="paper-button" extends="paper-focusable" attributes="label raisedButton iconSrc icon"
+<polymer-element name="paper-button" extends="paper-focusable" attributes="label raisedButton iconSrc icon size"
 role="button">
 
   <template>
@@ -71,7 +71,7 @@ role="button">
       <paper-ripple id="ripple"></paper-ripple>
       <div id="content">
         <template if="{{iconSrc || icon}}">
-          <core-icon id="icon" src="{{iconSrc}}" icon="{{icon}}"></core-icon>
+          <core-icon id="icon" src="{{iconSrc}}" icon="{{icon}}" size="{{size}}"></core-icon>
         </template>
         <template if="{{label}}">
           <span>{{label}}</span>
@@ -124,7 +124,16 @@ role="button">
           * @type string
           * @default ''
           */
-         icon: {value: ''}
+         icon: {value: ''},
+
+         /**
+          * Specifies the size of the icon in pixel units.
+          *
+          * @attribute size
+          * @type string
+          * @default 24
+          */
+         size: 24
 
       },
 

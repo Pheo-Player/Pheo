@@ -1,0 +1,74 @@
+@import url(vendor/normalize.css);
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Roboto";
+  position: relative;
+}
+
+.content {
+  padding: 0 20px;
+}
+
+core-scaffold {
+  position: absolute;
+  top: 35px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+div[tool] h2 {
+  margin: 0;
+  color: #8e908c;
+  font-family: "RobotoCondensed";
+  line-height: 46px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+div[tool] h2 .part {
+  color: #4d4d4c;
+}
+div[tool] h2 img.cover {
+  width: 46px;
+  height: 46px;
+  float: left;
+  margin-right: 16px;
+}
+
+core-menu {
+  background: #fff;
+  color: #4d4d4c;
+}
+core-menu hr {
+  border: 0px none;
+  background: #4d4d4c;
+  width: 100%;
+  height: 1px;
+}
+core-menu core-item[active] {
+  background: #009688;
+  color: #3e999f;
+}
+core-menu core-item[active]::shadow core-icon {
+  fill: #3e999f;
+}
+core-menu core-item:hover {
+  background: #d6d6d6;
+}
+
+core-toolbar {
+  background: #009688;
+  font-family: "RobotoCondensed";
+}
+
+core-scaffold::shadow core-toolbar {
+  background: #d6d6d6;
+}
+core-scaffold::shadow core-toolbar #menuButton {
+  color: #4d4d4c;
+}

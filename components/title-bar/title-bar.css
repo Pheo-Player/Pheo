@@ -2,11 +2,16 @@
 	-webkit-app-region: drag;
 	width: calc(100% - 80px);
 	height: 100%;
-	margin: 0 -10px;
 
 	position: absolute;
 	z-index: -1;
 }
+#actions {
+	text-align: right;
+
+	padding: 0 10px;
+}
+
 #titlebar {
 	-webkit-user-select: none;
 	box-sizing: border-box;
@@ -19,10 +24,8 @@
 	height: 35px;
 	background: #2d2d2d;
 
-	line-height: 40px;
-	padding: 0 10px;
-
-	text-align: right;
+	line-height: 38px;
+	padding: 0;
 }
 #titlebar button {
 	width: 15px;
@@ -53,19 +56,4 @@
 }
 #titlebar button:focus {
 	outline: 0 none;
-}
-
-core-header-panel {
-	height: 100%;
-	overflow: auto;
-	-webkit-overflow-scrolling: touch; 
-}
-core-toolbar {
-	background: #03a9f4;
-	color: white;
-}
-#tabs {
-	width: 100%;
-	margin: 0;
-	-webkit-user-select: none;
 }

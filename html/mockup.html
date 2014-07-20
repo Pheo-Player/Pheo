@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Pheo</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+	<link rel="stylesheet" href="../resources/fonts/fonts.css">
+	<link rel="stylesheet" href="../css/mockup.css">
+
+	<script src="../bower_components/platform/platform.js"></script>
+	<link rel="import" href="../components/title-bar/title-bar.html">
+	<link rel="import" href="../components/playstate-bar/playstate-bar.html">
+
+	<link rel="import" href="../components/pheo-icons/pheo-icons.html">
+	<link rel="import" href="../bower_components/core-icons/iconsets/av-icons.html">
+
+	<link rel="import" href="../bower_components/core-menu/core-menu.html">
+	<link rel="import" href="../bower_components/core-item/core-item.html">
+
+	<link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+</head>
+
+<body>
+	<title-bar></title-bar>
+
+	<core-scaffold>
+		<core-header-panel navigation flex mode="waterfall">
+			<core-toolbar><p>Pheo</p></core-toolbar>
+			<core-menu selected="0">
+				<core-item icon="pheo:library">Library</core-item>
+				<core-item icon="av:play-arrow">Playing</core-item>
+				<core-item icon="list">Playlists</core-item>
+				<hr>
+				<core-item icon="pheo:drip">Services</core-item>
+			</core-menu>
+		</core-header-panel>
+
+		<div tool style="width: 100%">
+			<h2 style="float: left">
+				<img class="cover" src="http://upload.wikimedia.org/wikipedia/en/a/a4/Todd_Terje_-_It%27s_Album_Time_album_cover.png">
+				<span class="part">Todd Terje</span> &raquo;
+				<span class="part">It's Album Time</span>
+			</h2>
+		</div>
+		<div class="content">
+			<!-- <p style="font-family: Roboto">
+				<span style="font-style: normal">
+					<span style="font-weight: 100">100</span>
+					<span style="font-weight: 400">400</span>
+					<span style="font-weight: 500">500</span>
+					<span style="font-weight: 700">700</span>
+					<span style="font-weight: 900">900</span>
+				</span>
+				&mdash;
+				<span style="font-style: italic">
+					<span style="font-weight: 100">100</span>
+					<span style="font-weight: 400">400</span>
+					<span style="font-weight: 500">500</span>
+					<span style="font-weight: 700">700</span>
+					<span style="font-weight: 900">900</span>
+				</span>
+			</p>
+			<p style="font-family: RobotoCondensed">
+				<span style="font-style: normal">
+					<span style="font-weight: 100">100</span>
+					<span style="font-weight: 400">400</span>
+					<span style="font-weight: 700">700</span>
+				</span>
+				&mdash;
+				<span style="font-style: italic">
+					<span style="font-weight: 100">100</span>
+					<span style="font-weight: 400">400</span>
+					<span style="font-weight: 700">700</span>
+				</span>
+			</p> -->
+		</div>
+	</core-scaffold>
+
+	<playstate-bar></playstate-bar>
+</body>
+</html>
