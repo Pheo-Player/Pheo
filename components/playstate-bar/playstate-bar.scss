@@ -1,0 +1,28 @@
+@import '../../css/colors';
+
+:host {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+
+	width: 100%;
+
+	@include colors-primary;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+
+	-webkit-user-select: none;
+}
+
+[buttons] {
+	height: 80px;
+}
+
+paper-slider {
+	position: absolute;
+	top: 0; left: 0;
+
+	width: calc(100% + 32px);
+
+	margin-top: -16px; 
+	margin-left: -16px;
+}

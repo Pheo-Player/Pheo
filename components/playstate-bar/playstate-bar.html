@@ -8,12 +8,14 @@
 	<template>
 		<link rel="stylesheet" href="playstate-bar.css">
 
-		<paper-slider pin="true"></paper-slider>
+		<!-- <paper-slider pin="true"></paper-slider> -->
 
-		<div horizontal center-justified layout id="buttons">
-			<paper-icon-button icon="av:skip-previous" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
-			<paper-icon-button icon="av:play-arrow" size="48" rippleColor="#fff"></paper-icon-button>
-			<paper-icon-button icon="av:skip-next" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
+		<div horizontal center-justified layout buttons>
+			<div horizontal center layout>
+				<paper-icon-button icon="av:skip-previous" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
+				<paper-icon-button icon="av:play-arrow" size="48" rippleColor="#fff"></paper-icon-button>
+				<paper-icon-button icon="av:skip-next" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
+			</div>
 		</div>
 	</template>
 	<script>

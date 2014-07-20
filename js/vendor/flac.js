@@ -380,6 +380,8 @@ var FLACDecoder = AV.Decoder.extend(function() {
         
         var rice_order = stream.read(4),
             samples = (this.blockSize >>> rice_order);
+
+        alert(rice_order);
             
         if (predictor_order > samples)
             throw new Error('Invalid predictor order ' + predictor_order + ' > ' + samples);

@@ -17,5 +17,6 @@
   },
   "_source": "git://github.com/Polymer/core-scaffold.git",
   "_target": "~0.3.4",
-  "_originalSource": "Polymer/core-scaffold"
+  "_originalSource": "Polymer/core-scaffold",
+  "_direct": true
 }

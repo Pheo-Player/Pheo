@@ -1,0 +1,15 @@
+$hue: 'indigo';
+$indices: (
+	'primary': 500,
+	'dark': 700,
+	'light': 400
+);
+
+$accent-hue: 'cyan';
+$accent-indices: (
+	'primary': 400,
+	'fallback1': 100,
+	'fallback2': 200
+);
+@import "colors/color_functions";
+@import "colors/color_mixins";

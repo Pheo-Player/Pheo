@@ -1,8 +1,24 @@
+@charset "UTF-8";
 @import url(vendor/normalize.css);
+h1, h2, h3, h4, h5 {
+  font-family: "RobotoCondensed";
+  font-weight: 500;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-user-select: none;
+}
+
+div[head], div[head] *, div[main], div[main] * {
+  -webkit-user-select: text;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 body {
@@ -11,64 +27,110 @@ body {
 }
 
 .content {
-  padding: 0 20px;
+  padding: 20px;
+  margin-bottom: 120px;
 }
-
-core-scaffold {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.content .cover {
+  vertical-align: top;
+  display: inline-block;
+  min-height: 100%;
+  width: 200px;
 }
-
-div[tool] h2 {
-  margin: 0;
-  color: #8e908c;
-  font-family: "RobotoCondensed";
-  line-height: 46px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-div[tool] h2 .part {
-  color: #4d4d4c;
-}
-div[tool] h2 img.cover {
-  width: 46px;
-  height: 46px;
-  float: left;
-  margin-right: 16px;
-}
-
-core-menu {
-  background: #fff;
-  color: #4d4d4c;
-}
-core-menu hr {
-  border: 0px none;
-  background: #4d4d4c;
+.content .cover img {
   width: 100%;
-  height: 1px;
+  height: auto;
 }
-core-menu core-item[active] {
-  background: #009688;
-  color: #3e999f;
+.content .tracklist {
+  vertical-align: top;
+  display: inline-block;
+  width: calc(100% - 204px);
 }
-core-menu core-item[active]::shadow core-icon {
-  fill: #3e999f;
+.content .tracklist .track {
+  padding-left: 20px;
+  white-space: nowrap;
+  width: 100%;
+  height: 48px;
+  line-height: 48px;
 }
-core-menu core-item:hover {
-  background: #d6d6d6;
+.content .tracklist .track .tracknumber {
+  font-weight: 700;
+  font-family: 'RobotoCondensed';
+  display: inline-block;
+  text-align: right;
+  width: 1em;
+  margin-right: 0.5em;
+}
+.content .tracklist .track div {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.content .tracklist .track:last-child div {
+  border-bottom: 0 none;
+}
+.content .tracklist .track.active {
+  background-color: #26c6da;
+  color: rgba(0, 0, 0, 0.87);
+}
+.content .tracklist .track.active h1, .content .tracklist .track.active h2, .content .tracklist .track.active h3, .content .tracklist .track.active h4, .content .tracklist .track.active h5 {
+  color: black;
+}
+.content .tracklist .track.active .secondary {
+  color: rgba(0, 0, 0, 0.54);
+}
+.content .tracklist .track.active .hint {
+  color: rgba(0, 0, 0, 0.26);
+}
+.content .tracklist .track.active .divider {
+  color: rgba(0, 0, 0, 0.12);
 }
 
-core-toolbar {
-  background: #009688;
-  font-family: "RobotoCondensed";
+core-drawer-panel {
+  margin-top: 35px;
+  overflow: auto;
+}
+core-drawer-panel div[drawer] {
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
 }
 
-core-scaffold::shadow core-toolbar {
-  background: #d6d6d6;
+core-toolbar[head] {
+  background-color: #3f51b5;
+  color: rgba(255, 255, 255, 0.87);
 }
-core-scaffold::shadow core-toolbar #menuButton {
-  color: #4d4d4c;
+core-toolbar[head] .secondary {
+  color: rgba(255, 255, 255, 0.54);
+}
+core-toolbar[head] .hint {
+  color: rgba(255, 255, 255, 0.26);
+}
+core-toolbar[head] .divider {
+  display: none;
+  color: rgba(255, 255, 255, 0.12);
+}
+core-toolbar[head] h1, core-toolbar[head] h2, core-toolbar[head] h3, core-toolbar[head] h4, core-toolbar[head] h5 {
+  color: white;
+}
+core-toolbar[head] h3 {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+core-toolbar[head] .part ~ .part:before {
+  content: "›";
+  color: rgba(255, 255, 255, 0.26);
+  margin: 0 0.3em;
+}
+
+core-toolbar[menu] {
+  background-color: #303f9f;
+  color: rgba(255, 255, 255, 0.87);
+}
+core-toolbar[menu] .secondary {
+  color: rgba(255, 255, 255, 0.54);
+}
+core-toolbar[menu] .hint {
+  color: rgba(255, 255, 255, 0.26);
+}
+core-toolbar[menu] .divider {
+  color: rgba(255, 255, 255, 0.12);
+}
+core-toolbar[menu] h1, core-toolbar[menu] h2, core-toolbar[menu] h3, core-toolbar[menu] h4, core-toolbar[menu] h5 {
+  color: white;
 }

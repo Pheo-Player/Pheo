@@ -1,33 +1,36 @@
 :host {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-
-	width: 100%;
-	height: 80px;
-
-	background: #d6d6d6;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #3f51b5;
+  color: rgba(255, 255, 255, 0.87);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  -webkit-user-select: none;
+}
+:host .secondary {
+  color: rgba(255, 255, 255, 0.54);
+}
+:host .hint {
+  color: rgba(255, 255, 255, 0.26);
+}
+:host .divider {
+  display: none;
+  color: rgba(255, 255, 255, 0.12);
+}
+:host h1, :host h2, :host h3, :host h4, :host h5 {
+  color: white;
 }
 
-#buttons {
-	height: 64px;
-	margin: 8px 0;
-}
-
-paper-icon-button::shadow #ripple {
-	color: #fff;
-}
-paper-icon-button.secondary {
-	padding-top: 8px;
+[buttons] {
+  height: 80px;
 }
 
 paper-slider {
-	position: absolute;
-	top: 0; left: 0;
-
-	width: calc(100% + 32px);
-
-	margin-top: -18px; 
-	margin-left: -16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 32px);
+  margin-top: -16px;
+  margin-left: -16px;
 }
