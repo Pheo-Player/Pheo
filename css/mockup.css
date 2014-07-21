@@ -67,7 +67,7 @@ body {
   border-bottom: 0 none;
 }
 .content .tracklist .track.active {
-  background-color: #26c6da;
+  background-color: #40c4ff;
   color: rgba(0, 0, 0, 0.87);
 }
 .content .tracklist .track.active h1, .content .tracklist .track.active h2, .content .tracklist .track.active h3, .content .tracklist .track.active h4, .content .tracklist .track.active h5 {

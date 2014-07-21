@@ -3,11 +3,25 @@
   "cfgVersion": 1,
   "name": "Pheo",
   "files": {
+    "50ef0fa9": {
+      "id": "50ef0fa9",
+      "pid": "dc9f9524",
+      "name": "main.js",
+      "input": "js/main.js",
+      "customOutput": false,
+      "type": "Js",
+      "config": {
+        "autoCompile": false,
+        "uglify": true,
+        "mangle": true,
+        "sourcemaps": false
+      }
+    },
     "3e0e97f5": {
       "id": "3e0e97f5",
       "pid": "dc9f9524",
       "name": "aac.js",
-      "input": "js\\vendor\\aac.js",
+      "input": "js/vendor/aac.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -21,7 +35,7 @@
       "id": "ee9117e4",
       "pid": "dc9f9524",
       "name": "alac.js",
-      "input": "js\\vendor\\alac.js",
+      "input": "js/vendor/alac.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -35,7 +49,7 @@
       "id": "4d76fd93",
       "pid": "dc9f9524",
       "name": "aurora.js",
-      "input": "js\\vendor\\aurora.js",
+      "input": "js/vendor/aurora.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -49,21 +63,7 @@
       "id": "a6e8e8a1",
       "pid": "dc9f9524",
       "name": "flac.js",
-      "input": "js\\vendor\\flac.js",
-      "customOutput": false,
-      "type": "Js",
-      "config": {
-        "autoCompile": false,
-        "uglify": true,
-        "mangle": true,
-        "sourcemaps": false
-      }
-    },
-    "50ef0fa9": {
-      "id": "50ef0fa9",
-      "pid": "dc9f9524",
-      "name": "main.js",
-      "input": "js\\main.js",
+      "input": "js/vendor/flac.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -77,7 +77,7 @@
       "id": "21b9dab4",
       "pid": "dc9f9524",
       "name": "mp3.js",
-      "input": "js\\vendor\\mp3.js",
+      "input": "js/vendor/mp3.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -91,7 +91,7 @@
       "id": "37be7133",
       "pid": "dc9f9524",
       "name": "ogg.js",
-      "input": "js\\vendor\\ogg.js",
+      "input": "js/vendor/ogg.js",
       "customOutput": false,
       "type": "Js",
       "config": {
@@ -101,25 +101,11 @@
         "sourcemaps": false
       }
     },
-    "2f5944c9": {
-      "id": "2f5944c9",
+    "2a6f81c8": {
+      "id": "2a6f81c8",
       "pid": "dc9f9524",
-      "name": "vorbis.js",
-      "input": "js\\vendor\\vorbis.js",
-      "customOutput": false,
-      "type": "Js",
-      "config": {
-        "autoCompile": false,
-        "uglify": true,
-        "mangle": true,
-        "sourcemaps": false
-      }
-    },
-    "bc9f8cea": {
-      "id": "bc9f8cea",
-      "pid": "dc9f9524",
-      "name": "fonts.scss",
-      "input": "resources\\fonts\\fonts.scss",
+      "name": "playstate-bar.scss",
+      "input": "components/playstate-bar/playstate-bar.scss",
       "customOutput": false,
       "type": "Scss",
       "config": {
@@ -138,7 +124,7 @@
       "id": "25cc7e6e",
       "pid": "dc9f9524",
       "name": "mockup.scss",
-      "input": "css\\mockup.scss",
+      "input": "css/mockup.scss",
       "customOutput": false,
       "type": "Scss",
       "config": {
@@ -153,11 +139,11 @@
         "autoprefixer": false
       }
     },
-    "ffd84cea": {
-      "id": "ffd84cea",
+    "bc9f8cea": {
+      "id": "bc9f8cea",
       "pid": "dc9f9524",
-      "name": "colors.scss",
-      "input": "css\\colors.scss",
+      "name": "fonts.scss",
+      "input": "resources/fonts/fonts.scss",
       "customOutput": false,
       "type": "Scss",
       "config": {
@@ -170,13 +156,27 @@
         "fullCompass": false,
         "outputStyle": "expanded",
         "autoprefixer": false
+      }
+    },
+    "2f5944c9": {
+      "id": "2f5944c9",
+      "pid": "dc9f9524",
+      "name": "vorbis.js",
+      "input": "js/vendor/vorbis.js",
+      "customOutput": false,
+      "type": "Js",
+      "config": {
+        "autoCompile": false,
+        "uglify": true,
+        "mangle": true,
+        "sourcemaps": false
       }
     },
     "f4686c4c": {
       "id": "f4686c4c",
       "pid": "dc9f9524",
       "name": "README.md",
-      "input": "css\\colors\\README.md",
+      "input": "css/colors/README.md",
       "customOutput": false,
       "type": "Md",
       "config": {
@@ -189,26 +189,7 @@
       "id": "2ec3b306",
       "pid": "dc9f9524",
       "name": "example.scss",
-      "input": "css\\colors\\example.scss",
-      "customOutput": false,
-      "type": "Scss",
-      "config": {
-        "autoCompile": true,
-        "lineNumbers": false,
-        "unixNewlines": false,
-        "sourcemaps": false,
-        "debug": false,
-        "compass": false,
-        "fullCompass": false,
-        "outputStyle": "expanded",
-        "autoprefixer": false
-      }
-    },
-    "2a6f81c8": {
-      "id": "2a6f81c8",
-      "pid": "dc9f9524",
-      "name": "playstate-bar.scss",
-      "input": "components\\playstate-bar\\playstate-bar.scss",
+      "input": "css/colors/example.scss",
       "customOutput": false,
       "type": "Scss",
       "config": {
@@ -228,7 +209,7 @@
     "91501727": {
       "id": "91501727",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_medium.scss",
+      "path": "resources/fonts/_roboto_medium.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -236,17 +217,50 @@
     "94906669": {
       "id": "94906669",
       "pid": "dc9f9524",
-      "path": "css\\colors\\_base_colors.scss",
+      "path": "css/colors/_base_colors.scss",
       "parents": [
         "2ec3b306",
         "25cc7e6e",
         "2a6f81c8"
       ]
     },
+    "731befd7": {
+      "id": "731befd7",
+      "pid": "dc9f9524",
+      "path": "css/_colors.scss",
+      "parents": [
+        "2a6f81c8",
+        "25cc7e6e"
+      ]
+    },
+    "22cb0a6d": {
+      "id": "22cb0a6d",
+      "pid": "dc9f9524",
+      "path": "css/vendor/normalize.css",
+      "parents": [
+        "25cc7e6e"
+      ]
+    },
+    "9d692dbd": {
+      "id": "9d692dbd",
+      "pid": "dc9f9524",
+      "path": "css/_vars.scss",
+      "parents": [
+        "25cc7e6e"
+      ]
+    },
+    "31f563e9": {
+      "id": "31f563e9",
+      "pid": "dc9f9524",
+      "path": "css/_typography.scss",
+      "parents": [
+        "25cc7e6e"
+      ]
+    },
     "19aa1948": {
       "id": "19aa1948",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_black.scss",
+      "path": "resources/fonts/_roboto_black.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -254,7 +268,7 @@
     "144c4561": {
       "id": "144c4561",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_blackitalic.scss",
+      "path": "resources/fonts/_roboto_blackitalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -262,7 +276,7 @@
     "94c61bb9": {
       "id": "94c61bb9",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_bold.scss",
+      "path": "resources/fonts/_roboto_bold.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -270,7 +284,7 @@
     "9089d1bf": {
       "id": "9089d1bf",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_boldcondensed.scss",
+      "path": "resources/fonts/_roboto_boldcondensed.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -278,7 +292,7 @@
     "04818947": {
       "id": "04818947",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_boldcondenseditalic.scss",
+      "path": "resources/fonts/_roboto_boldcondenseditalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -286,7 +300,7 @@
     "c40c920b": {
       "id": "c40c920b",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_bolditalic.scss",
+      "path": "resources/fonts/_roboto_bolditalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -294,7 +308,7 @@
     "3ee58ae7": {
       "id": "3ee58ae7",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_condensed.scss",
+      "path": "resources/fonts/_roboto_condensed.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -302,7 +316,7 @@
     "653e5029": {
       "id": "653e5029",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_condenseditalic.scss",
+      "path": "resources/fonts/_roboto_condenseditalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -310,7 +324,7 @@
     "05c86f1c": {
       "id": "05c86f1c",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_italic.scss",
+      "path": "resources/fonts/_roboto_italic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -318,7 +332,7 @@
     "70da7f3e": {
       "id": "70da7f3e",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_light.scss",
+      "path": "resources/fonts/_roboto_light.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -326,7 +340,7 @@
     "52fa4ef5": {
       "id": "52fa4ef5",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_lightcondensed.scss",
+      "path": "resources/fonts/_roboto_lightcondensed.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -334,7 +348,7 @@
     "41956ef8": {
       "id": "41956ef8",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_lightcondenseditalic.scss",
+      "path": "resources/fonts/_roboto_lightcondenseditalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -342,7 +356,7 @@
     "4c721373": {
       "id": "4c721373",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_lightitalic.scss",
+      "path": "resources/fonts/_roboto_lightitalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -350,7 +364,7 @@
     "1e059b8e": {
       "id": "1e059b8e",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_mediumitalic.scss",
+      "path": "resources/fonts/_roboto_mediumitalic.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -358,7 +372,7 @@
     "f95d393f": {
       "id": "f95d393f",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_regular.scss",
+      "path": "resources/fonts/_roboto_regular.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -366,7 +380,7 @@
     "37e6e00b": {
       "id": "37e6e00b",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_thin.scss",
+      "path": "resources/fonts/_roboto_thin.scss",
       "parents": [
         "bc9f8cea"
       ]
@@ -374,47 +388,15 @@
     "32aff8bf": {
       "id": "32aff8bf",
       "pid": "dc9f9524",
-      "path": "resources\\fonts\\_roboto_thinitalic.scss",
+      "path": "resources/fonts/_roboto_thinitalic.scss",
       "parents": [
         "bc9f8cea"
-      ]
-    },
-    "22cb0a6d": {
-      "id": "22cb0a6d",
-      "pid": "dc9f9524",
-      "path": "css\\vendor\\normalize.css",
-      "parents": [
-        "25cc7e6e"
-      ]
-    },
-    "453d5ece": {
-      "id": "453d5ece",
-      "pid": "dc9f9524",
-      "path": "css\\_color_functions.scss",
-      "parents": [
-        "ffd84cea"
-      ]
-    },
-    "b25f5173": {
-      "id": "b25f5173",
-      "pid": "dc9f9524",
-      "path": "css\\_base_colors.scss",
-      "parents": [
-        "ffd84cea"
-      ]
-    },
-    "7be2a324": {
-      "id": "7be2a324",
-      "pid": "dc9f9524",
-      "path": "css\\_color_mixins.scss",
-      "parents": [
-        "ffd84cea"
       ]
     },
     "c37686b6": {
       "id": "c37686b6",
       "pid": "dc9f9524",
-      "path": "css\\colors\\_color_functions.scss",
+      "path": "css/colors/_color_functions.scss",
       "parents": [
         "2ec3b306",
         "25cc7e6e",
@@ -424,34 +406,9 @@
     "fc0f76bf": {
       "id": "fc0f76bf",
       "pid": "dc9f9524",
-      "path": "css\\colors\\_color_mixins.scss",
+      "path": "css/colors/_color_mixins.scss",
       "parents": [
         "2ec3b306",
-        "25cc7e6e",
-        "2a6f81c8"
-      ]
-    },
-    "9d692dbd": {
-      "id": "9d692dbd",
-      "pid": "dc9f9524",
-      "path": "css\\_vars.scss",
-      "parents": [
-        "25cc7e6e"
-      ]
-    },
-    "31f563e9": {
-      "id": "31f563e9",
-      "pid": "dc9f9524",
-      "path": "css\\_typography.scss",
-      "parents": [
-        "25cc7e6e"
-      ]
-    },
-    "731befd7": {
-      "id": "731befd7",
-      "pid": "dc9f9524",
-      "path": "css\\_colors.scss",
-      "parents": [
         "25cc7e6e",
         "2a6f81c8"
       ]

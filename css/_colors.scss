@@ -5,11 +5,12 @@ $indices: (
 	'light': 400
 );
 
-$accent-hue: 'cyan';
+$accent-hue: 'light-blue';
 $accent-indices: (
-	'primary': 400,
-	'fallback1': 100,
-	'fallback2': 200
+	'primary': 'A200',
+	'fallback1': 'A100',
+	'fallback2': 'A400'
 );
+
 @import "colors/color_functions";
 @import "colors/color_mixins";
