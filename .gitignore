@@ -1,0 +1,13 @@
+# Windows
+ffmpegsumo.dll
+icudtl.dat
+libEGL.dll
+libGLESv2.dll
+nw.exe
+nw.pak
+nwsnapshot.exe
+
+# Mac
+nwsnapshot
+node-webkit.app
+node-webkit.app/**
