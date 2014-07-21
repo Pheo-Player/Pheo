@@ -1,8 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 exports.FLACDemuxer = require('./src/demuxer');
 exports.FLACDecoder = require('./src/decoder');
+require('./src/ogg');
 
-},{"./src/decoder":2,"./src/demuxer":3}],2:[function(require,module,exports){
+},{"./src/decoder":2,"./src/demuxer":3,"./src/ogg":4}],2:[function(require,module,exports){
 /*
  * FLAC.js - Free Lossless Audio Codec decoder in JavaScript
  * Original C version from FFmpeg (c) 2003 Alex Beregszaszi
@@ -36,6 +37,9 @@ var FLACDecoder = AV.Decoder.extend(function() {
         for (var i = 0; i < this.format.channelsPerFrame; i++) {
             this.decoded[i] = new Int32Array(cookie.maxBlockSize);
         }
+        
+        // for 24 bit lpc frames, this is used to simulate a 64 bit int
+        this.lpc_total = new Int32Array(2);
     };
     
     const BLOCK_SIZES = new Int16Array([
@@ -100,15 +104,6 @@ var FLACDecoder = AV.Decoder.extend(function() {
         if (this.bps !== this.format.bitsPerChannel)
             throw new Error('Switching bits per sample mid-stream not supported.');
         
-        var sampleShift, is32;    
-        if (this.bps > 16) {
-            sampleShift = 32 - this.bps;
-            is32 = true;
-        } else {
-            sampleShift = 16 - this.bps;
-            is32 = false;
-        }
-        
         // sample number or frame number
         // see http://www.hydrogenaudio.org/forums/index.php?s=ea7085ffe6d57132c36e6105c0d434c9&showtopic=88390&pid=754269&st=0&#entry754269
         var ones = 0;
@@ -153,7 +148,8 @@ var FLACDecoder = AV.Decoder.extend(function() {
         stream.align();
         stream.advance(16); // skip CRC frame footer
         
-        var output = new ArrayBuffer(this.blockSize * channels * this.bps / 8),
+        var is32 = this.bps > 16,
+            output = new ArrayBuffer(this.blockSize * channels * (is32 ? 4 : 2)),
             buf = is32 ? new Int32Array(output) : new Int16Array(output),
             blockSize = this.blockSize,
             decoded = this.decoded,
@@ -163,7 +159,7 @@ var FLACDecoder = AV.Decoder.extend(function() {
             case CHMODE_INDEPENDENT:
                 for (var k = 0; k < blockSize; k++) {
                     for (var i = 0; i < channels; i++) {
-                        buf[j++] = decoded[i][k] << sampleShift;
+                        buf[j++] = decoded[i][k];
                     }
                 }
                 break;
@@ -173,8 +169,8 @@ var FLACDecoder = AV.Decoder.extend(function() {
                     var left = decoded[0][i],
                         right = decoded[1][i];
 
-                    buf[j++] = left << sampleShift;
-                    buf[j++] = (left - right) << sampleShift;
+                    buf[j++] = left;
+                    buf[j++] = (left - right);
                 }
                 break;
                 
@@ -183,8 +179,8 @@ var FLACDecoder = AV.Decoder.extend(function() {
                     var left = decoded[0][i],
                         right = decoded[1][i];
 
-                    buf[j++] = (left + right) << sampleShift;
-                    buf[j++] = right << sampleShift;
+                    buf[j++] = (left + right);
+                    buf[j++] = right;
                 }
                 break;
                 
@@ -194,8 +190,8 @@ var FLACDecoder = AV.Decoder.extend(function() {
                         right = decoded[1][i];
                     
                     left -= right >> 1;
-                    buf[j++] = (left + right) << sampleShift;
-                    buf[j++] = left << sampleShift;
+                    buf[j++] = (left + right);
+                    buf[j++] = left;
                 }
                 break;
         }
@@ -339,36 +335,100 @@ var FLACDecoder = AV.Decoder.extend(function() {
         
         this.decode_residuals(channel, predictor_order);
         
-        if (this.bps > 16)
-            throw new Error("no 64-bit integers in JS, could probably use doubles though");
+        if (this.bps <= 16) {
+            for (var i = predictor_order; i < blockSize - 1; i += 2) {
+                var c = coeffs[0],
+                    d = decoded[i - predictor_order],
+                    s0 = 0, s1 = 0;
             
-        for (var i = predictor_order; i < blockSize - 1; i += 2) {
-            var d = decoded[i - predictor_order],
-                s0 = 0, s1 = 0, c;
-
-            for (var j = predictor_order - 1; j > 0; j--) {
-                c = coeffs[j];
+                for (var j = predictor_order - 1; j > 0; j--) {
+                    c = coeffs[j];
+                    s0 += c * d;
+                    d = decoded[i - j];
+                    s1 += c * d;
+                }
+            
                 s0 += c * d;
-                d = decoded[i - j];
+                d = decoded[i] += (s0 >> qlevel);
                 s1 += c * d;
+                decoded[i + 1] += (s1 >> qlevel);
             }
+            
+            if (i < blockSize) {
+                var sum = 0;
+                for (var j = 0; j < predictor_order; j++)
+                    sum += coeffs[j] * decoded[i - j - 1];
+            
+                decoded[i] += (sum >> qlevel);
+            }
+        } else {
+            // simulate 64 bit integer using an array of two 32 bit ints
+            var total = this.lpc_total;
+            for (var i = predictor_order; i < blockSize; i++) {
+                // reset total to 0
+                total[0] = 0;
+                total[1] = 0;
 
-            c = coeffs[0];
-            s0 += c * d;
-            d = decoded[i] += (s0 >> qlevel);
-            s1 += c * d;
-            decoded[i + 1] += (s1 >> qlevel);
-        }
+                for (j = 0; j < predictor_order; j++) {
+                    // simulate `total += coeffs[j] * decoded[i - j - 1]`
+                    multiply_add(total, coeffs[j], decoded[i - j - 1]);                    
+                }
 
-        if (i < blockSize) {
-            var sum = 0;
-            for (var j = 0; j < predictor_order; j++)
-                sum += coeffs[j] * decoded[i - j - 1];
-
-            decoded[i] += (sum >> qlevel);
+                // simulate `decoded[i] += total >> qlevel`
+                // we know that qlevel < 32 since it is a 5 bit field (see above)
+                decoded[i] += (total[0] >>> qlevel) | (total[1] << (32 - qlevel));
+            }
         }
     };
     
+    const TWO_PWR_32_DBL = Math.pow(2, 32);
+        
+    // performs `total += a * b` on a simulated 64 bit int
+    // total is an Int32Array(2)
+    // a and b are JS numbers (32 bit ints)
+    function multiply_add(total, a, b) {
+        // multiply a * b (we can use normal JS multiplication for this)
+        var r = a * b;
+        var n = r < 0;
+        if (n)
+            r = -r;
+            
+        var r_low = (r % TWO_PWR_32_DBL) | 0;
+        var r_high = (r / TWO_PWR_32_DBL) | 0;
+        if (n) {
+            r_low = ~r_low + 1;
+            r_high = ~r_high;
+        }
+        
+        // add result to total
+        var a48 = total[1] >>> 16;
+        var a32 = total[1] & 0xFFFF;
+        var a16 = total[0] >>> 16;
+        var a00 = total[0] & 0xFFFF;
+
+        var b48 = r_high >>> 16;
+        var b32 = r_high & 0xFFFF;
+        var b16 = r_low >>> 16;
+        var b00 = r_low & 0xFFFF;
+
+        var c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+        c00 += a00 + b00;
+        c16 += c00 >>> 16;
+        c00 &= 0xFFFF;
+        c16 += a16 + b16;
+        c32 += c16 >>> 16;
+        c16 &= 0xFFFF;
+        c32 += a32 + b32;
+        c48 += c32 >>> 16;
+        c32 &= 0xFFFF;
+        c48 += a48 + b48;
+        c48 &= 0xFFFF;
+        
+        // store result back in total
+        total[0] = (c16 << 16) | c00;
+        total[1] = (c48 << 16) | c32;
+    }
+     
     const INT_MAX = 32767;
     
     this.prototype.decode_residuals = function(channel, predictor_order) {
@@ -380,8 +440,6 @@ var FLACDecoder = AV.Decoder.extend(function() {
         
         var rice_order = stream.read(4),
             samples = (this.blockSize >>> rice_order);
-
-        alert(rice_order);
             
         if (predictor_order > samples)
             throw new Error('Invalid predictor order ' + predictor_order + ' > ' + samples);
@@ -685,6 +743,49 @@ var FLACDemuxer = AV.Demuxer.extend(function() {
 });
 
 module.exports = FLACDemuxer;
+
+},{}],4:[function(require,module,exports){
+var AV = (window.AV);
+
+// if ogg.js exists, register a plugin
+try {
+  var OggDemuxer = (window.AV.OggDemuxer);
+} catch (e) {};
+if (!OggDemuxer) return;
+
+OggDemuxer.plugins.push({
+  magic: "\177FLAC",
+  
+  init: function() {
+    this.list = new AV.BufferList();
+    this.stream = new AV.Stream(this.list);
+  },
+  
+  readHeaders: function(packet) {
+    var stream = this.stream;
+    this.list.append(new AV.Buffer(packet));
+    
+    stream.advance(5); // magic
+    if (stream.readUInt8() != 1)
+      throw new Error('Unsupported FLAC version');
+      
+    stream.advance(3);
+    if (stream.peekString(0, 4) != 'fLaC')
+      throw new Error('Not flac');
+      
+    this.flac = AV.Demuxer.find(stream.peekSingleBuffer(0, stream.remainingBytes()));
+    if (!this.flac)
+      throw new Error('Flac demuxer not found');
+    
+    this.flac.prototype.readChunk.call(this);
+    return true;
+  },
+  
+  readPacket: function(packet) {
+    this.list.append(new AV.Buffer(packet));
+    this.flac.prototype.readChunk.call(this);
+  }
+});
 
 },{}]},{},[1])
 

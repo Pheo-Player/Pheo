@@ -13,14 +13,16 @@
 		<div horizontal center-justified layout buttons>
 			<div horizontal center layout>
 				<paper-icon-button icon="av:skip-previous" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
-				<paper-icon-button icon="av:play-arrow" size="48" rippleColor="#fff"></paper-icon-button>
+				<paper-icon-button on-click="{{playPause}}" icon="av:play-arrow" size="48" rippleColor="#fff"></paper-icon-button>
 				<paper-icon-button icon="av:skip-next" size="32" rippleColor="#fff" class="secondary"></paper-icon-button>
 			</div>
 		</div>
 	</template>
 	<script>
 		Polymer({
-			
+			playPause: function(e) {
+				window.player.play();
+			}
 		});
 	</script>
 </polymer-element>
