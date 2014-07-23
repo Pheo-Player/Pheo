@@ -145,8 +145,8 @@
 	<script src="../js/vendor/flac.js"></script>
 	<script>
 		document.addEventListener('keyup', function(e) {
-			if(e.keyCode == "R".charCodeAt(0) && e.ctrlKey)
-				location.reload(false);
+			if(e.keyCode == "R".charCodeAt(0) && (e.ctrlKey || e.metaKey))
+				location.reload();
 		});
 	</script>
 </body>

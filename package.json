@@ -1,16 +1,6 @@
 {
 	"name": "Pheo",
 	"description": "A music player application based on modern web technologies",
-	"main": "./html/mockup.html",
-
-	"window": {
-		"toolbar" : false,
-		"frame" : false,
-
-		"width": 1000,
-		"height": 800,
-
-		"min_width": 500,
-		"min_height": 300
-	}
+	"version": "0.0.1",
+	"main": "main.js"
 }

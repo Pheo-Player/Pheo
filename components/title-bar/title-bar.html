@@ -17,9 +17,10 @@
 		</div>
 	</template>
 	<script>
-		var gui = require("nw.gui");
-		var win = gui.Window.get();
 		var maximized = false;
+
+		var remote = require('remote');
+		var win = remote.getCurrentWindow();
 
 		Polymer({
 			closeWindow: function() {
