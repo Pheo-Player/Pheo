@@ -9,6 +9,7 @@
 	  "url": "git://github.com/Pheo-Player/Pheo.git"
 	},
 	"dependencies": {
-		"nedb": "0.10.6"
+		"nedb": "0.10.6",
+		"jquery": "1.11.1"
 	}
 }
