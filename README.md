@@ -1,4 +1,4 @@
-### Pheo
+# Pheo
 
 Pheo is an desktop music player application built on top of atom-shell and other web technologies. It will do the following, and hopefully more:
 
