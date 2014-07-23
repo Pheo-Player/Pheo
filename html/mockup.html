@@ -133,12 +133,6 @@
 		</div>
 	</core-drawer-panel>
 
-	<script>
-		// document.querySelector('#file').addEventListener("change", function(e) {
-		// 	window.player = AV.Player.fromFile(this.files[0]);
-		// }, false);
-	</script>
-
 	<playstate-bar></playstate-bar>
 
 	<script src="../js/vendor/aurora.js"></script>
@@ -147,6 +141,19 @@
 		document.addEventListener('keyup', function(e) {
 			if(e.keyCode == "R".charCodeAt(0) && (e.ctrlKey || e.metaKey))
 				location.reload();
+		});
+
+		window.ondragover = function(e) { e.preventDefault(); return false };
+		window.ondrop = function(e) { e.preventDefault(); return false };
+		document.addEventListener('drop', function(e) {
+			e.preventDefault();
+
+			var droppedFiles = e.dataTransfer.files;
+			for(int i = 0; i < droppedFiles.length; i++) {
+				// do something with each file
+			}
+
+			return false;
 		});
 	</script>
 </body>

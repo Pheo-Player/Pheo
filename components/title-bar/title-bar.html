@@ -17,8 +17,6 @@
 		</div>
 	</template>
 	<script>
-		var maximized = false;
-
 		var remote = require('remote');
 		var win = remote.getCurrentWindow();
 
@@ -27,12 +25,10 @@
 				win.close();
 			},
 			maximizeWindow: function() {
-				if(maximized)
+				if(win.isMaximized())
 					win.unmaximize();
 				else
 					win.maximize();
-
-				maximized = !maximized;
 			},
 			minimizeWindow: function() {
 				win.minimize();
