@@ -2,5 +2,13 @@
 	"name": "Pheo",
 	"description": "A music player application based on modern web technologies",
 	"version": "0.0.1",
-	"main": "main.js"
+	"main": "app.js",
+
+	"repository": {
+	  "type": "git",
+	  "url": "git://github.com/Pheo-Player/Pheo.git"
+	},
+	"dependencies": {
+		"nedb": "0.10.6"
+	}
 }

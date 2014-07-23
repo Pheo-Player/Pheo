@@ -25,136 +25,120 @@
 <body> 
 	<title-bar></title-bar>
 
-	<core-drawer-panel responsiveWidth="500">
-		<div drawer vertical layout><!-- left menu -->
-			<core-header-panel flex mode="waterfall">
-				<core-toolbar menu>
-					<img src="../img/logo.svg" width="40" height="40">
-					<h4>Pheo</h4>
+	<div id="main-content">
+		<core-drawer-panel responsiveWidth="500">
+			<div drawer vertical layout><!-- left menu -->
+				<core-header-panel flex mode="waterfall">
+					<core-toolbar menu>
+						<img src="../img/logo.svg" width="40" height="40">
+						<h4>Pheo</h4>
+					</core-toolbar>
+		
+					<core-menu selected="0">
+						<core-item icon="pheo:library">Library</core-item>
+						<core-item icon="av:play-arrow">Playing</core-item>
+						<core-item icon="list">Playlists</core-item>
+						<hr>
+						<core-item icon="pheo:drip">Services</core-item>
+					</core-menu>
+				</core-header-panel>
+			</div>
+		
+			<div main><!-- main content -->
+				<core-toolbar head>
+					<paper-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></paper-icon-button>
+		
+					<h3>
+						<span class="part">Todd Terje</span><span class="part">It's Album Time</span><span class="part">Inspector Norse</span>
+					</h3>
 				</core-toolbar>
-
-				<core-menu selected="0">
-					<core-item icon="pheo:library">Library</core-item>
-					<core-item icon="av:play-arrow">Playing</core-item>
-					<core-item icon="list">Playlists</core-item>
-					<hr>
-					<core-item icon="pheo:drip">Services</core-item>
-				</core-menu>
-			</core-header-panel>
-		</div>
-
-		<div main><!-- main content -->
-			<core-toolbar head>
-				<paper-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></paper-icon-button>
-
-				<h3>
-					<span class="part">Todd Terje</span><span class="part">It's Album Time</span><span class="part">Inspector Norse</span>
-				</h3>
-			</core-toolbar>
-			
-			<div class="content">
-				<div class="cover"><img src="http://upload.wikimedia.org/wikipedia/en/a/a4/Todd_Terje_-_It%27s_Album_Time_album_cover.png"></div>
-
-				<div class="tracklist">
-					<div class="track">
-						<div>
-							<span class="tracknumber">1</span>
-							Intro (It's Album Time)
+				
+				<div class="content">
+					<div class="cover"><img src="http://upload.wikimedia.org/wikipedia/en/a/a4/Todd_Terje_-_It%27s_Album_Time_album_cover.png"></div>
+		
+					<div class="tracklist">
+						<div class="track">
+							<div>
+								<span class="tracknumber">1</span>
+								Intro (It's Album Time)
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">2</span>
-							Leisure Suit Preben
+						<div class="track">
+							<div>
+								<span class="tracknumber">2</span>
+								Leisure Suit Preben
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">3</span>
-							Preben Goes to Acapulco
+						<div class="track">
+							<div>
+								<span class="tracknumber">3</span>
+								Preben Goes to Acapulco
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">4</span>
-							Svensk Sås
+						<div class="track">
+							<div>
+								<span class="tracknumber">4</span>
+								Svensk Sås
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">5</span>
-							Strandbar
+						<div class="track">
+							<div>
+								<span class="tracknumber">5</span>
+								Strandbar
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">6</span>
-							Delorean Dynamite
+						<div class="track">
+							<div>
+								<span class="tracknumber">6</span>
+								Delorean Dynamite
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">7</span>
-							Johnny and Mary (ft. Bryan Ferry)
+						<div class="track">
+							<div>
+								<span class="tracknumber">7</span>
+								Johnny and Mary (ft. Bryan Ferry)
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">8</span>
-							Alfonso Muskedunder
+						<div class="track">
+							<div>
+								<span class="tracknumber">8</span>
+								Alfonso Muskedunder
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">9</span>
-							Swing Star (Part 1)
+						<div class="track">
+							<div>
+								<span class="tracknumber">9</span>
+								Swing Star (Part 1)
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">10</span>
-							Swing Star (Part 2)
+						<div class="track">
+							<div>
+								<span class="tracknumber">10</span>
+								Swing Star (Part 2)
+							</div>
 						</div>
-					</div>
-					<div class="track">
-						<div>
-							<span class="tracknumber">11</span>
-							Oh Joy
+						<div class="track">
+							<div>
+								<span class="tracknumber">11</span>
+								Oh Joy
+							</div>
 						</div>
-					</div>
-					<div class="track active">
-						<div>
-							<span class="tracknumber">12</span>
-							Inspector Norse
+						<div class="track active">
+							<div>
+								<span class="tracknumber">12</span>
+								Inspector Norse
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</core-drawer-panel>
+		</core-drawer-panel>
+	</div>
 
 	<playstate-bar></playstate-bar>
 
 	<script src="../js/vendor/aurora.js"></script>
 	<script src="../js/vendor/flac.js"></script>
-	<script>
-		document.addEventListener('keyup', function(e) {
-			if(e.keyCode == "R".charCodeAt(0) && (e.ctrlKey || e.metaKey))
-				location.reload();
-		});
-
-		window.ondragover = function(e) { e.preventDefault(); return false };
-		window.ondrop = function(e) { e.preventDefault(); return false };
-		document.addEventListener('drop', function(e) {
-			e.preventDefault();
-
-			var droppedFiles = e.dataTransfer.files;
-			for(int i = 0; i < droppedFiles.length; i++) {
-				// do something with each file
-			}
-
-			return false;
-		});
-	</script>
+	<!-- <script src="../js/main.js"></script> -->
 </body>
 </html>

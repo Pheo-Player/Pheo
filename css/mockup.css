@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import url(vendor/normalize.css);
+@import url(vendor/nanoscroller.css);
 h1, h2, h3, h4, h5 {
   font-family: "RobotoCondensed";
   font-weight: 500;
@@ -18,119 +19,199 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 
 body {
   font-family: "Roboto";
-  position: relative;
+  overflow: hidden;
 }
 
-.content {
-  padding: 20px;
-  margin-bottom: 120px;
+.nano {
+  position: absolute;
+  top: 99px;
+  bottom: 80px;
+  height: calc(100% - 99px - 80px);
+  padding-bottom: 20px;
+  overflow: hidden;
 }
-.content .cover {
-  vertical-align: top;
-  display: inline-block;
-  min-height: 100%;
-  width: 200px;
+
+button:focus, button:active {
+  outline: 0 none;
 }
-.content .cover img {
+
+#title-bar {
+  z-index: 10;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 35px;
+  background: #2d2d2d;
+  padding: 0;
 }
-.content .tracklist {
-  vertical-align: top;
-  display: inline-block;
-  width: calc(100% - 204px);
+#title-bar #drag {
+  -webkit-app-region: drag;
+  width: calc(100% - 80px);
+  height: 100%;
+  position: absolute;
 }
-.content .tracklist .track {
-  padding-left: 20px;
-  white-space: nowrap;
-  width: 100%;
-  height: 48px;
-  line-height: 48px;
-}
-.content .tracklist .track .tracknumber {
-  font-weight: 700;
-  font-family: 'RobotoCondensed';
-  display: inline-block;
+#title-bar #actions {
   text-align: right;
-  width: 1em;
-  margin-right: 0.5em;
+  height: 100%;
+  line-height: 0;
+  padding-top: 10px;
+  padding-right: 10px;
 }
-.content .tracklist .track div {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+#title-bar button {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 0 none;
+  margin: 0 0 0 5px;
+  padding: 0;
+  cursor: pointer;
+  transition: all .15s ease-in-out;
+  opacity: 0.8;
 }
-.content .tracklist .track:last-child div {
-  border-bottom: 0 none;
+#title-bar button:hover {
+  box-shadow: 0 0 5px #000;
+  opacity: 1;
 }
-.content .tracklist .track.active {
-  background-color: #40c4ff;
-  color: rgba(0, 0, 0, 0.87);
+#title-bar button#closeWin {
+  background: #f2777a;
 }
-.content .tracklist .track.active h1, .content .tracklist .track.active h2, .content .tracklist .track.active h3, .content .tracklist .track.active h4, .content .tracklist .track.active h5 {
-  color: black;
+#title-bar button#maximizeWin {
+  background: #99cc99;
 }
-.content .tracklist .track.active .secondary {
-  color: rgba(0, 0, 0, 0.54);
-}
-.content .tracklist .track.active .hint {
-  color: rgba(0, 0, 0, 0.26);
-}
-.content .tracklist .track.active .divider {
-  color: rgba(0, 0, 0, 0.12);
-}
-
-core-drawer-panel {
-  margin-top: 35px;
-  overflow: auto;
-}
-core-drawer-panel div[drawer] {
-  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
+#title-bar button#minimizeWin {
+  background: #ffcc66;
 }
 
-core-toolbar[head] {
-  background-color: #3f51b5;
+#toolbars {
+  z-index: 5;
+  position: fixed;
+  top: 35px;
+  width: 100%;
+  overflow: hidden;
+}
+#toolbars > core-toolbar {
+  float: left;
+}
+#toolbars > core-toolbar[menu-toolbar] {
+  background-color: #303f9f;
   color: rgba(255, 255, 255, 0.87);
+  width: 250px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
-core-toolbar[head] .secondary {
+#toolbars > core-toolbar[menu-toolbar] .secondary {
   color: rgba(255, 255, 255, 0.54);
 }
-core-toolbar[head] .hint {
+#toolbars > core-toolbar[menu-toolbar] .hint {
   color: rgba(255, 255, 255, 0.26);
 }
-core-toolbar[head] .divider {
+#toolbars > core-toolbar[menu-toolbar] .divider {
+  color: rgba(255, 255, 255, 0.12);
+}
+#toolbars > core-toolbar[menu-toolbar] h1, #toolbars > core-toolbar[menu-toolbar] h2, #toolbars > core-toolbar[menu-toolbar] h3, #toolbars > core-toolbar[menu-toolbar] h4, #toolbars > core-toolbar[menu-toolbar] h5 {
+  color: white;
+}
+#toolbars > core-toolbar[content-toolbar] {
+  background-color: #3f51b5;
+  color: rgba(255, 255, 255, 0.87);
+  width: calc(100% - 250px);
+}
+#toolbars > core-toolbar[content-toolbar] .secondary {
+  color: rgba(255, 255, 255, 0.54);
+}
+#toolbars > core-toolbar[content-toolbar] .hint {
+  color: rgba(255, 255, 255, 0.26);
+}
+#toolbars > core-toolbar[content-toolbar] .divider {
   display: none;
   color: rgba(255, 255, 255, 0.12);
 }
-core-toolbar[head] h1, core-toolbar[head] h2, core-toolbar[head] h3, core-toolbar[head] h4, core-toolbar[head] h5 {
+#toolbars > core-toolbar[content-toolbar] h1, #toolbars > core-toolbar[content-toolbar] h2, #toolbars > core-toolbar[content-toolbar] h3, #toolbars > core-toolbar[content-toolbar] h4, #toolbars > core-toolbar[content-toolbar] h5 {
   color: white;
 }
-core-toolbar[head] h3 {
+#toolbars > core-toolbar[content-toolbar] h3 {
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
-core-toolbar[head] .part ~ .part:before {
+#toolbars > core-toolbar[content-toolbar] .part ~ .part:before {
   content: "›";
   color: rgba(255, 255, 255, 0.26);
   margin: 0 0.3em;
 }
 
-core-toolbar[menu] {
-  background-color: #303f9f;
-  color: rgba(255, 255, 255, 0.87);
+#pheo-menu {
+  float: left;
+  height: auto;
+  width: 250px;
+  margin: 0;
+  padding: 20px;
 }
-core-toolbar[menu] .secondary {
-  color: rgba(255, 255, 255, 0.54);
+
+#pheo-content {
+  float: left;
+  width: calc(100% - 250px);
+  height: auto;
+  min-height: 100%;
+  padding: 20px;
+  box-shadow: inset 5px 0 5px -5px rgba(0, 0, 0, 0.3);
 }
-core-toolbar[menu] .hint {
-  color: rgba(255, 255, 255, 0.26);
+#pheo-content .cover, #pheo-content .tracklist {
+  float: left;
 }
-core-toolbar[menu] .divider {
-  color: rgba(255, 255, 255, 0.12);
+#pheo-content .cover {
+  width: 200px;
 }
-core-toolbar[menu] h1, core-toolbar[menu] h2, core-toolbar[menu] h3, core-toolbar[menu] h4, core-toolbar[menu] h5 {
-  color: white;
+#pheo-content .cover img {
+  width: 100%;
+  height: auto;
+}
+#pheo-content .tracklist {
+  width: calc(100% - 200px);
+}
+#pheo-content .tracklist .track {
+  width: 100%;
+  height: 48px;
+  line-height: 48px;
+  padding-left: 20px;
+  white-space: nowrap;
+}
+#pheo-content .tracklist .track .tracknumber {
+  display: inline-block;
+  width: 1em;
+  margin-right: 0.5em;
+  font-weight: 700;
+  font-family: 'RobotoCondensed';
+  text-align: right;
+}
+#pheo-content .tracklist .track div {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+#pheo-content .tracklist .track:last-child div {
+  border-bottom: 0 none;
+}
+#pheo-content .tracklist .track.active {
+  background-color: #40c4ff;
+  color: rgba(0, 0, 0, 0.87);
+}
+#pheo-content .tracklist .track.active h1, #pheo-content .tracklist .track.active h2, #pheo-content .tracklist .track.active h3, #pheo-content .tracklist .track.active h4, #pheo-content .tracklist .track.active h5 {
+  color: black;
+}
+#pheo-content .tracklist .track.active .secondary {
+  color: rgba(0, 0, 0, 0.54);
+}
+#pheo-content .tracklist .track.active .hint {
+  color: rgba(0, 0, 0, 0.26);
+}
+#pheo-content .tracklist .track.active .divider {
+  color: rgba(0, 0, 0, 0.12);
+}
+
+core-drawer-panel div[drawer] {
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
 }

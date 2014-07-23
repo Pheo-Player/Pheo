@@ -17,9 +17,7 @@ App.on('ready', function() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
-    height: 600,
-
-    frame: false
+    height: 600
   });
 
   // and load the index.html of the App.
@@ -33,3 +31,35 @@ App.on('ready', function() {
     win = null;
   });
 });
+
+var Menu = require('menu');
+var MenuItem = require('menu-item');
+var template = [
+  {
+    label: 'Pheo',
+    submenu: [
+      {
+        label: 'Quit',
+        click: function() { app.quit(); }
+      }
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Reload',
+        accelerator: 'Command+R',
+        click: function() { BrowserWindow.getFocusedWindow().reloadIgnoringCache(); }
+      },
+      {
+        label: 'Toggle DevTools',
+        accelerator: 'Alt+Command+I',
+        click: function() { BrowserWindow.getFocusedWindow().toggleDevTools(); }
+      },
+    ]
+  }
+];
+
+menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
