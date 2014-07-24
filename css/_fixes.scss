@@ -1,0 +1,4 @@
+// This file is for overriding default Chrome styles that do not fit this application
+button:focus, button:active {
+	outline: 0 none;
+}

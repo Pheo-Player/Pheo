@@ -1,221 +1,43 @@
+// VENDOR IMPORTS
 @import "vendor/normalize.css";
-@import "vendor/nanoscroller.css";
 
-// IMPORTS
+// VARIABLE IMPORTS
 @import "colors";
 @import "vars";
 @import "typography";
 
-// BASIC LAYOUT
+// OUTERMOST LAYOUT
 * {
 	box-sizing: border-box;
 	-webkit-user-select: none; // Disallow selection by default
 }
 // Allow text selection for main content and main header
-div[head], div[main] {
+#main-header, #main-content {
 	&, * {
 		-webkit-user-select: text;
 	}
 }
 
-html, body {
-	height: 100%;
-	margin: 0; padding: 0;
-}
 body {
 	font-family: "Roboto";
-	overflow: hidden;
 }
-.nano {
+#outer-drawer {
 	position: absolute;
 
-	top: $titlebar-height + $toolbars-height;
-	bottom: $playbar-height;
-	height: calc(100% - #{$titlebar-height + $toolbars-height} - #{$playbar-height});
-
-	padding-bottom: 20px;
-
-	overflow: hidden;
-}
-
-// CHROME FIXES
-button:focus, button:active {
-	outline: 0 none;
-}
-
-// TITLEBAR
-#title-bar {
-	z-index: 10;
-	-webkit-user-select: none;
-	box-sizing: border-box;
-
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: $titlebar-height;
-	background: #2d2d2d;
-
-	padding: 0;
-
-	#drag {
-		-webkit-app-region: drag;
-		width: calc(100% - 80px);
-		height: 100%;
-
-		position: absolute;
-	}
-
-	#actions {
-		text-align: right;
-		height: 100%;
-		line-height: 0;
-
-		padding-top: ($titlebar-height - $titlebar-button-size) / 2;
-		padding-right: ($titlebar-height - $titlebar-button-size) / 2;
-	}
-
-	button {
-		width: $titlebar-button-size;
-		height: $titlebar-button-size;
-		border-radius: 50%;
-		border: 0 none;
-
-		margin: 0 0 0 5px;
-		padding: 0;
-
-		cursor: pointer;
-		transition: all .15s ease-in-out;
-
-		opacity: 0.8;
-
-		&:hover {
-			box-shadow: 0 0 5px #000;
-			opacity: 1;
-		}
-
-		&#closeWin {
-			background: #f2777a;
-		}
-		&#maximizeWin {
-			background: #99cc99;
-		}
-		&#minimizeWin {
-			background: #ffcc66;
-		}
-	}
-}
-
-// TOOLBARS
-#toolbars {
-	z-index: 5;
-	position: fixed;
 	top: $titlebar-height;
+	bottom: $playbar-height;
+	height: calc(100% - #{$titlebar-height + $playbar-height});
 
-	width: 100%;
+	padding-bottom: $default-padding;
 
 	overflow: hidden;
-
-	> core-toolbar {
-		float: left;
-
-		&[menu-toolbar] {
-			@include colors-dark;
-
-			width: $menu-width;
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-			z-index: 1;
-		}
-		&[content-toolbar] {
-			@include colors-primary;
-
-			width: calc(100% - #{$menu-width});
-
-			h3 {
-				white-space: nowrap;
-			}
-
-			.part ~ .part:before {
-				content: "›";
-				color: textColorShade($primaryText, 3);
-
-				margin: 0 0.3em;
-			}
-		}
-	}
 }
 
-// MENU
-#pheo-menu {
-	float: left;
+// PARTIAL IMPORTS
+@import "titlebar";
 
-	height: auto;
-	width: $menu-width;
+@import "headers";
+@import "menu";
+@import "content";
 
-	margin: 0;
-	padding: 20px;
-}
-
-// CONTENT
-#pheo-content {
-	float: left;
-
-	width: calc(100% - #{$menu-width});
-	height: auto;
-	min-height: 100%;
-
-	padding: 20px;
-
-	box-shadow: inset 5px 0 5px -5px rgba(0, 0, 0, 0.3);
-
-	.cover, .tracklist {
-		float: left;
-	}
-
-	.cover {
-		width: 200px;
-
-		img {
-			width: 100%;
-			height: auto;
-		}
-	}
-
-	.tracklist {
-		width: calc(100% - 200px);
-
-		.track {
-			width: 100%;
-			height: 48px;
-			line-height: 48px;
-
-			padding-left: 20px;
-
-			white-space: nowrap;
-
-			.tracknumber {
-				display: inline-block;
-
-				width: 1em;
-				margin-right: 0.5em;
-
-				font-weight: 700;
-				font-family: 'RobotoCondensed';
-				text-align: right;
-			}
-			
-			div {	border-bottom: 1px solid textColorShade(#000, 4);	}
-			&:last-child div { border-bottom: 0 none; }
-
-			&.active {
-				@include colors-accent;
-			}
-		}
-	}
-}
-
-core-drawer-panel { // main outer region
-	div[drawer] {
-		box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
-	}
-}
+@import "fixes";

@@ -1,0 +1,61 @@
+#title-bar {
+	z-index: 10;
+	-webkit-user-select: none;
+	box-sizing: border-box;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: $titlebar-height;
+	background: #2d2d2d;
+
+	padding: 0;
+
+	#drag {
+		-webkit-app-region: drag;
+		width: calc(100% - 80px);
+		height: 100%;
+
+		position: absolute;
+	}
+
+	#actions {
+		text-align: right;
+		height: 100%;
+		line-height: 0;
+
+		padding-top: ($titlebar-height - $titlebar-button-size) / 2;
+		padding-right: ($titlebar-height - $titlebar-button-size) / 2;
+	}
+
+	button {
+		width: $titlebar-button-size;
+		height: $titlebar-button-size;
+		border-radius: 50%;
+		border: 0 none;
+
+		margin: 0 0 0 5px;
+		padding: 0;
+
+		cursor: pointer;
+		transition: all .15s ease-in-out;
+
+		opacity: 0.8;
+
+		&:hover {
+			box-shadow: 0 0 5px #000;
+			opacity: 1;
+		}
+
+		&#close-win {
+			background: #f2777a;
+		}
+		&#maximize-win {
+			background: #99cc99;
+		}
+		&#minimize-win {
+			background: #ffcc66;
+		}
+	}
+}

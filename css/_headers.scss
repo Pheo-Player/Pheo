@@ -1,0 +1,26 @@
+core-header-panel {
+	&[drawer] {
+		background: #fff;
+	}
+
+	core-toolbar {
+		&#menu-header {
+			@include colors-dark;
+		}
+		&#main-header {
+			@include colors-primary;
+
+			#main-header-content {
+				white-space: nowrap;
+			}
+
+
+			.part ~ .part:before {
+				content: "›";
+				color: textColorShade($primaryText, 3);
+
+				margin: 0 0.3em;
+			}
+		}
+	}
+}

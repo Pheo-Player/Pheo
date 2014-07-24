@@ -1,0 +1,13 @@
+#menu {
+	box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
+}
+// Don't show menu toggle when the content is wide enough
+#outer-drawer:not([narrow]) #menu-toggle {
+	display: none;
+
+	// Set the left margin for the header if button is invisible
+	// We use the value of $default-padding here to align it with the body padding
+	~ #main-header-content {
+		margin-left: $default-padding;
+	}
+}

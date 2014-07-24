@@ -1,6 +1,5 @@
 @charset "UTF-8";
 @import url(vendor/normalize.css);
-@import url(vendor/nanoscroller.css);
 h1, h2, h3, h4, h5 {
   font-family: "RobotoCondensed";
   font-weight: 500;
@@ -11,32 +10,21 @@ h1, h2, h3, h4, h5 {
   -webkit-user-select: none;
 }
 
-div[head], div[head] *, div[main], div[main] * {
+#main-header, #main-header *, #main-content, #main-content * {
   -webkit-user-select: text;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 body {
   font-family: "Roboto";
-  overflow: hidden;
 }
 
-.nano {
+#outer-drawer {
   position: absolute;
-  top: 99px;
+  top: 35px;
   bottom: 80px;
-  height: calc(100% - 99px - 80px);
+  height: calc(100% - 115px);
   padding-bottom: 20px;
   overflow: hidden;
-}
-
-button:focus, button:active {
-  outline: 0 none;
 }
 
 #title-bar {
@@ -79,109 +67,102 @@ button:focus, button:active {
   box-shadow: 0 0 5px #000;
   opacity: 1;
 }
-#title-bar button#closeWin {
+#title-bar button#close-win {
   background: #f2777a;
 }
-#title-bar button#maximizeWin {
+#title-bar button#maximize-win {
   background: #99cc99;
 }
-#title-bar button#minimizeWin {
+#title-bar button#minimize-win {
   background: #ffcc66;
 }
 
-#toolbars {
-  z-index: 5;
-  position: fixed;
-  top: 35px;
-  width: 100%;
-  overflow: hidden;
+core-header-panel[drawer] {
+  background: #fff;
 }
-#toolbars > core-toolbar {
-  float: left;
-}
-#toolbars > core-toolbar[menu-toolbar] {
+core-header-panel core-toolbar#menu-header {
   background-color: #303f9f;
   color: rgba(255, 255, 255, 0.87);
-  width: 250px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  z-index: 1;
 }
-#toolbars > core-toolbar[menu-toolbar] .secondary {
+core-header-panel core-toolbar#menu-header .secondary {
   color: rgba(255, 255, 255, 0.54);
 }
-#toolbars > core-toolbar[menu-toolbar] .hint {
+core-header-panel core-toolbar#menu-header .hint {
   color: rgba(255, 255, 255, 0.26);
 }
-#toolbars > core-toolbar[menu-toolbar] .divider {
+core-header-panel core-toolbar#menu-header .divider {
   color: rgba(255, 255, 255, 0.12);
 }
-#toolbars > core-toolbar[menu-toolbar] h1, #toolbars > core-toolbar[menu-toolbar] h2, #toolbars > core-toolbar[menu-toolbar] h3, #toolbars > core-toolbar[menu-toolbar] h4, #toolbars > core-toolbar[menu-toolbar] h5 {
+core-header-panel core-toolbar#menu-header h1, core-header-panel core-toolbar#menu-header h2, core-header-panel core-toolbar#menu-header h3, core-header-panel core-toolbar#menu-header h4, core-header-panel core-toolbar#menu-header h5 {
   color: white;
 }
-#toolbars > core-toolbar[content-toolbar] {
+core-header-panel core-toolbar#main-header {
   background-color: #3f51b5;
   color: rgba(255, 255, 255, 0.87);
-  width: calc(100% - 250px);
 }
-#toolbars > core-toolbar[content-toolbar] .secondary {
+core-header-panel core-toolbar#main-header .secondary {
   color: rgba(255, 255, 255, 0.54);
 }
-#toolbars > core-toolbar[content-toolbar] .hint {
+core-header-panel core-toolbar#main-header .hint {
   color: rgba(255, 255, 255, 0.26);
 }
-#toolbars > core-toolbar[content-toolbar] .divider {
+core-header-panel core-toolbar#main-header .divider {
   display: none;
   color: rgba(255, 255, 255, 0.12);
 }
-#toolbars > core-toolbar[content-toolbar] h1, #toolbars > core-toolbar[content-toolbar] h2, #toolbars > core-toolbar[content-toolbar] h3, #toolbars > core-toolbar[content-toolbar] h4, #toolbars > core-toolbar[content-toolbar] h5 {
+core-header-panel core-toolbar#main-header h1, core-header-panel core-toolbar#main-header h2, core-header-panel core-toolbar#main-header h3, core-header-panel core-toolbar#main-header h4, core-header-panel core-toolbar#main-header h5 {
   color: white;
 }
-#toolbars > core-toolbar[content-toolbar] h3 {
+core-header-panel core-toolbar#main-header #main-header-content {
   white-space: nowrap;
 }
-#toolbars > core-toolbar[content-toolbar] .part ~ .part:before {
+core-header-panel core-toolbar#main-header .part ~ .part:before {
   content: "›";
   color: rgba(255, 255, 255, 0.26);
   margin: 0 0.3em;
 }
 
-#pheo-menu {
-  float: left;
-  height: auto;
-  width: 250px;
-  margin: 0;
-  padding: 20px;
+#menu {
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
 }
 
-#pheo-content {
-  float: left;
-  width: calc(100% - 250px);
+#outer-drawer:not([narrow]) #menu-toggle {
+  display: none;
+}
+#outer-drawer:not([narrow]) #menu-toggle ~ #main-header-content {
+  margin-left: 20px;
+}
+
+#main::shadow #mainContainer {
+  padding-bottom: 20px;
+}
+
+#main-content {
   height: auto;
   min-height: 100%;
   padding: 20px;
-  box-shadow: inset 5px 0 5px -5px rgba(0, 0, 0, 0.3);
 }
-#pheo-content .cover, #pheo-content .tracklist {
+#main-content .cover, #main-content .tracklist {
   float: left;
 }
-#pheo-content .cover {
+#main-content .cover {
   width: 200px;
 }
-#pheo-content .cover img {
+#main-content .cover img {
   width: 100%;
   height: auto;
 }
-#pheo-content .tracklist {
+#main-content .tracklist {
   width: calc(100% - 200px);
 }
-#pheo-content .tracklist .track {
+#main-content .tracklist .track {
   width: 100%;
   height: 48px;
   line-height: 48px;
   padding-left: 20px;
   white-space: nowrap;
 }
-#pheo-content .tracklist .track .tracknumber {
+#main-content .tracklist .track .tracknumber {
   display: inline-block;
   width: 1em;
   margin-right: 0.5em;
@@ -189,29 +170,29 @@ button:focus, button:active {
   font-family: 'RobotoCondensed';
   text-align: right;
 }
-#pheo-content .tracklist .track div {
+#main-content .tracklist .track div {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
-#pheo-content .tracklist .track:last-child div {
+#main-content .tracklist .track:last-child div {
   border-bottom: 0 none;
 }
-#pheo-content .tracklist .track.active {
+#main-content .tracklist .track.active {
   background-color: #40c4ff;
   color: rgba(0, 0, 0, 0.87);
 }
-#pheo-content .tracklist .track.active h1, #pheo-content .tracklist .track.active h2, #pheo-content .tracklist .track.active h3, #pheo-content .tracklist .track.active h4, #pheo-content .tracklist .track.active h5 {
+#main-content .tracklist .track.active h1, #main-content .tracklist .track.active h2, #main-content .tracklist .track.active h3, #main-content .tracklist .track.active h4, #main-content .tracklist .track.active h5 {
   color: black;
 }
-#pheo-content .tracklist .track.active .secondary {
+#main-content .tracklist .track.active .secondary {
   color: rgba(0, 0, 0, 0.54);
 }
-#pheo-content .tracklist .track.active .hint {
+#main-content .tracklist .track.active .hint {
   color: rgba(0, 0, 0, 0.26);
 }
-#pheo-content .tracklist .track.active .divider {
+#main-content .tracklist .track.active .divider {
   color: rgba(0, 0, 0, 0.12);
 }
 
-core-drawer-panel div[drawer] {
-  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
+button:focus, button:active {
+  outline: 0 none;
 }

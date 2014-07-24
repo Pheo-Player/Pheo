@@ -2,12 +2,13 @@ var remote = require('remote');
 var win = remote.getCurrentWindow();
 
 // Global key event listener, we will trigger things like playback control through media keys from here
-document.addEventListener('keyup', function(e) {
+window.onkeyup = function(e) {
+	alert(e);
 	if(e.keyCode == "R".charCodeAt(0) && (e.ctrlKey || e.metaKey)) // reload on Ctrl+R / Cmd+R
 		location.reload();
 	else if(e.keyCode == 123) // Open Dev Tools on F12
 		win.toggleDevTools();
-});
+};
 
 // Prevent default drag&drop behaviour of changing location to dropped file
 window.ondragover = function(e) { e.preventDefault(); return false };
@@ -28,16 +29,27 @@ document.addEventListener('drop', function(e) {
 
 
 // --- should be extracted
-document.querySelector('#closeWin').addEventListener('click', function(e) {
-	console.log(e);
+document.querySelector('#close-win').addEventListener('click', function(e) {
 	win.close();
 });
-document.querySelector('#maximizeWin').addEventListener('click', function(e) {
+document.querySelector('#maximize-win').addEventListener('click', function(e) {
 	if(win.isMaximized())
 		win.unmaximize();
 	else
 		win.maximize();
 });
-document.querySelector('#minimizeWin').addEventListener('click', function(e) {
+document.querySelector('#minimize-win').addEventListener('click', function(e) {
 	win.minimize();
+});
+
+// Document parts that need to wait for Polymer
+window.addEventListener('polymer-ready', function() {
+	// Toggle the menu with the menu button
+  var drawerButton = document.getElementById('menu-toggle');
+  var drawer = document.getElementById('outer-drawer');
+  drawerButton.addEventListener('click', function() {
+    drawer.togglePanel();
+  });
+
+  
 });
