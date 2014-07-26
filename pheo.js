@@ -21,7 +21,7 @@ App.on('ready', function() {
   });
 
   // and load the index.html of the App.
-  win.loadUrl('file://' + __dirname + '/html/mockup.html');
+  win.loadUrl('file://' + __dirname + '/index.html');
 
   // Emitted when the window is closed.
   win.on('closed', function() {
