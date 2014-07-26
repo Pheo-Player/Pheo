@@ -9,7 +9,8 @@
     "url": "git://github.com/Pheo-Player/Pheo.git"
   },
   "dependencies": {
-    "nedb": "0.10.6"
+    "nedb": "0.10.6",
+    "requirejs": "^2.1.14"
   },
   "devDependencies": {
     "grunt-contrib-coffee": "^0.10.1",
