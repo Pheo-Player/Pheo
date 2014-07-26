@@ -12,5 +12,5 @@ $accent-indices: (
 	'fallback2': 'A400'
 );
 
-@import "colors/color_functions";
-@import "colors/color_mixins";
+@import "../bower_components/google-colors/color_functions";
+@import "../bower_components/google-colors/color_mixins";

@@ -20,6 +20,8 @@
     "tests"
   ],
   "dependencies": {
+    "google-colors": "git://github.com/Pheo-Player/google-colors.git",
+    
     "core-animated-pages": "Polymer/core-animated-pages#~0.3.4",
     "core-collapse": "Polymer/core-collapse#~0.3.4",
     "core-drawer-panel": "Polymer/core-drawer-panel#~0.3.4",
