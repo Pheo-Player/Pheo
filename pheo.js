@@ -17,11 +17,16 @@ App.on('ready', function() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
-    height: 600
+    height: 600,
+
+    'min-width': 600,
+    'min-height': 500,
+    
+    frame: false
   });
 
   // and load the index.html of the App.
-  win.loadUrl('file://' + __dirname + '/index.html');
+  win.loadUrl('file://' + __dirname + '/client/index.html');
 
   // Emitted when the window is closed.
   win.on('closed', function() {
@@ -44,22 +49,6 @@ var template = [
       }
     ]
   },
-  {
-    label: 'View',
-    submenu: [
-      {
-        label: 'Reload',
-        accelerator: 'Command+R',
-        click: function() { BrowserWindow.getFocusedWindow().reloadIgnoringCache(); }
-      },
-      {
-        label: 'Toggle DevTools',
-        accelerator: 'Alt+Command+I',
-        click: function() { BrowserWindow.getFocusedWindow().toggleDevTools(); }
-      },
-    ]
-  }
 ];
-
 menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);

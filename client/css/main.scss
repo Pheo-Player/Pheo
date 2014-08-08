@@ -1,0 +1,43 @@
+@charset "UTF-8";
+
+// VARIABLE IMPORTS
+@import "colors";
+@import "vars";
+@import "typography";
+
+// OUTERMOST LAYOUT
+* {
+	box-sizing: border-box;
+	-webkit-user-select: none; // Disallow selection by default
+}
+// Allow text selection for main content and main header
+#main-header, #main-content {
+	&, * {
+		-webkit-user-select: text;
+	}
+}
+
+body {
+	font-family: "Roboto";
+	overflow: hidden;
+}
+#outer-drawer {
+	position: absolute;
+
+	top: $titlebar-height;
+	bottom: $playbar-height;
+	height: calc(100% - #{$titlebar-height + $playbar-height});
+
+	padding-bottom: $default-padding;
+
+	overflow: hidden;
+}
+
+// PARTIAL IMPORTS
+@import "titlebar";
+
+@import "headers";
+@import "menu";
+@import "content";
+
+@import "fixes";
