@@ -1,5 +1,5 @@
 .sass-cache/
 node_modules/
-bower_components/
+client/bower_components/
 
 client/app/pheo-app.js
