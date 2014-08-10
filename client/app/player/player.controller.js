@@ -1,8 +1,16 @@
 angular.module('pheoApp')
-	.controller('playerController', ['playerService', function(playerService) {
-		this.filePath = '/home/chipf0rk/Music/Wildest Dreams/Wildest Dreams/1. Wildest Dreams - Rollerskates.mp3';
+	.controller('PlayerController', ['PlayerSvc', function(PlayerSvc) {
+		this.filePath = '/home/chipf0rk/Music/ppp.mp3';
 
 		this.loadFile = function() {
-			playerService.loadFile(this.filePath);
+			PlayerSvc.loadFile(this.filePath);
+		};
+
+		this.playPause = function() {
+			PlayerSvc.playPause();
 		}
+		
+		this.stop = function() {
+			PlayerSvc.stop();
+		};
 	}]);

@@ -4,8 +4,15 @@ module.exports = function(grunt) {
 
 		concat: {
 			app: {
-				src: ['client/app/**/*.js'],
-				dest: 'client/app/build.js',
+				options: {
+					sourceMap: true,
+				},
+				src: [
+					'client/app/pheo-app.js',
+					'client/app/**/*.js',
+					'!client/app/**/*.test.js',
+				],
+				dest: 'client/app.js',
 			},
 		},
 

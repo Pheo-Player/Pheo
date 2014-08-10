@@ -41,11 +41,12 @@
 		</div>
 	</div>
 
-	<div id="outer-drawer" ng-controller="playerController as playCtrl">
+	<div id="outer-drawer" ng-controller="PlayerController as playCtrl">
 		<input type="text"
 		       ng-model="playCtrl.filePath">
 		<button ng-click="playCtrl.loadFile()">Load</button>
 		<button ng-click="playCtrl.playPause()">Play/Pause</button>
+    <button ng-click="playCtrl.stop()">Stop</button>
 	</div>
 
 	<!-- Player Bar -->
@@ -57,17 +58,18 @@
 
 	<!-- Aurora.js -->
 	<script src="js/vendor/aurora/aurora.js"></script>
-	<script src="js/vendor/aurora/aac.js"></script>
 	<script src="js/vendor/aurora/alac.js"></script>
 	<script src="js/vendor/aurora/flac.js"></script>
 	<script src="js/vendor/aurora/mp3.js"></script>
 	<script src="js/vendor/aurora/ogg.js"></script>
 	<script src="js/vendor/aurora/vorbis.js"></script>
+  <!-- needs to be included last due to bug -->
+  <script src="js/vendor/aurora/aac.js"></script>
 	
 	<!-- Global init script -->
 	<script src="js/main.js"></script>
 
 	<!-- Angular App -->
-	<script src="app/build.js"></script>
+	<script src="app.js"></script>
 </body>
 </html>
