@@ -8,7 +8,7 @@ angular.module('pheoApp')
 
 		this.playPause = function() {
 			PlayerSvc.playPause();
-		}
+		};
 		
 		this.stop = function() {
 			PlayerSvc.stop();
