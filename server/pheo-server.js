@@ -1,12 +1,12 @@
-var express = require('express');
-var app = express();
-var fs = require('fs');
-var mime = require('mime');
+var express = require('express'),
+    app = express(),
+    fs = require('fs'),
+    path = require('path'),
+    mime = require('mime');
 
 app.set('port', process.env.PORT || 52430); // 52430='SPHEO
 
 /** LIBS **/
-var fortunes = require('./lib/fortunes.js');
 
 /** ROUTES **/
 app.get('/', function(req, res) {
@@ -14,35 +14,38 @@ app.get('/', function(req, res) {
 });
 
 app.get('/file', function(req, res) {
-	path = req.query.path;
+	var file_path = req.query.path.replace(/(?:\.\.)/g, '');
 
-	if(path === '') {
-		res.status(404);
-		return;
-	}
+	console.log(file_path);
 
-	// TODO library path
-	if(path.indexOf('/home/chipf0rk/Music') !== 0) {
-		res.status(403);
-		return;
-	}
-
-	fs.readFile(path, function(err, data) {
+	fs.readFile(file_path, function(err, data) {
 		if(err) {
-			res.status(500);
+			if(err.errno === 34) {
+				res.status(404);
+			}
+			else {
+				res.status(400);
+			}
+
+			res.end();
 			return;
 		}
 
-		var stat = fs.statSync(path);
 		res.writeHead(200, {
-			'Content-Type': mime.lookup(path),
-			'Content-Length': stat.size
+			'Content-Type': mime.lookup(file_path)
 		});
 
-		var readStream = fs.createReadStream(path);
-		readStream.pipe(res);
-
-		console.info('Streaming', path);
+		var readStream = fs.createReadStream(file_path);
+		
+		readStream.on('open', function() {
+			readStream.pipe(res);
+		});
+		readStream.on('error', function(err) {
+			res.end(err);
+		});
+		readStream.on('end', function() {
+			console.log('Streamed', file_path);
+		});
 	});
 });
 
