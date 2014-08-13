@@ -1,6 +1,8 @@
 var App = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
 
+var server = require('./server/pheo-server.js')(); // start server
+
 // Report crashes to our server.
 require('crash-reporter').start();
 
@@ -36,19 +38,3 @@ App.on('ready', function() {
 		win = null;
 	});
 });
-
-var Menu = require('menu');
-var MenuItem = require('menu-item');
-var template = [
-	{
-		label: 'Pheo',
-		submenu: [
-			{
-				label: 'Quit',
-				click: function() { app.quit(); }
-			}
-		]
-	},
-];
-menu = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(menu);
