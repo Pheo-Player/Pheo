@@ -5,7 +5,7 @@ describe('Player Service', function() {
 		t = true;
 	});
 
-	it('should have t set to true', function(arguments) {
+	it('should have t set to true', function() {
 		expect(t).toBeTruthy();
 	});
-})
+});

@@ -43,7 +43,7 @@ angular.module('pheoApp')
 			}
 
 			return deferred.promise;
-		};
+		}
 
 		/**
 		 * Loads an audio file by path.
@@ -73,7 +73,7 @@ angular.module('pheoApp')
 			}
 
 			return deferred.promise;
-		}
+		};
 
 		/**
 		 * Stops playback.

@@ -57,5 +57,5 @@ angular.module('pheoApp')
 			}
 
 			return deferred.promise;
-		};
+		}
 	}]);
