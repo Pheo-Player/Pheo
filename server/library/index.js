@@ -4,7 +4,7 @@ var express = require('express'),
     Library = require('./library');
 
 var library = new Library();
-library.populate();
+library.init();
 
 app.get('/api/', function(req, res) {
 	res.end('test');

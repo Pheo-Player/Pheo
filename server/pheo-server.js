@@ -10,7 +10,7 @@ function pheoServer() {
 	var libraryApp = require('./library');
 
 	/** Config **/
-	var conf = require('./nconf');
+	var conf = require('./config/nconf');
 	app.set('port', conf.get('port'));
 
 	/** Routes **/
