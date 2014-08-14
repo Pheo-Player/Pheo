@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 		concat: {
 			app: {
 				options: {
-					sourceMap: true,
+
 				},
 				src: [
 					'client/app/pheo-app.js',

@@ -1,5 +1,7 @@
 .sass-cache/
 node_modules/
-client/bower_components/
 
-client/app/pheo-app.js
+client/bower_components/
+client/app/app.js
+
+server/library.nedb
