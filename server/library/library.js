@@ -39,7 +39,7 @@ function Library() {
 		// We return the promise of this deferred
 		var deferred = q.defer();
 
-		// The files that have a different mtime stamp (i.e. changed) are stored in this array
+		// The files that have a different mtime stamp are stored in this array
 		var changedFiles = [];
 
 		// Create the async queue to refresh the timestamps
@@ -70,14 +70,15 @@ function Library() {
 					{ file: file },
 					{ $set: { file: file, mtime: stat.mtime } },
 					{ upsert: true },
-					cb); // Call the callback function (for the queue) when the library update finishes
+					cb); // Call the callback (for the queue) when library update finishes
 			});
 		}, CONCURRENCY);
 
 		// When the queue has completed:
 		refreshQueue.drain = function() {
 			// Log the time needed
-			console.log('Refreshed all timestamps in', (new Date() - startTime) / 1000 + 's');
+			console.log('Refreshed all timestamps in',
+				(new Date() - startTime) / 1000 + 's');
 			// Compact the library file
 			library.persistence.compactDatafile();
 			// Resolve the deferred with the array of changed files
@@ -115,11 +116,30 @@ function Library() {
 				deferred.reject(err);
 			});
 
+			// Workaround for the case of zero-byte files
+			// preventing the queue from completing.
+			//
+			// 'dataStreamed' is set to true when the 'data' event fires
+			// (does not happen for 0byte files).
+			//
+			// When the stream ends, this variable is checked. If a zero-byte file
+			// was detected, an angry console message will be logged
+			// and the callback will be called. (The queue loves this!)
+			var dataStreamed = false;
+			stream.once('data', function() { dataStreamed = true; })
+			stream.once('end', function() {
+				if(!dataStreamed) {
+					console.error(
+						'Bullshit detector is running hot: File with 0 bytes found', file);
+					cb();
+				}
+			});
+
 			// Get metadata parser for the current file stream
 			var parser = mmd(stream);
 
 			// Listen for the metadata event to fire
-			parser.on('metadata', function(data) {
+			parser.once('metadata', function(data) {
 				// Delete the picture property from the metadata,
 				// as we don't want to cache this in the database.
 				delete data.picture;
@@ -133,12 +153,15 @@ function Library() {
 					cb);
 			});
 			// Listen for the parser to be done.
-			parser.on('done', function(err) {
+			parser.once('done', function(err) {
 				// Only fire the callback here when there was an error
 				// reading the metadata. This is because if the metadata is read,
 				// both the 'metadata' and 'done' events fire, thus the callback
 				// would be called twice (which is illegal).
-				if(err) cb();
+				if(err) {
+					console.error(err, file);
+					cb();
+				}
 
 				// Destroy the stream when the parser is done to save strain on
 				// the file system.
@@ -149,15 +172,26 @@ function Library() {
 		// When the queue has completed:
 		refreshQueue.drain = function() {
 			// Log the time needed
-			console.log('Refreshed all metadata in', (new Date() - startTime) / 1000 + 's');
+			console.log('Refreshed all metadata in',
+				(new Date() - startTime) / 1000 + 's');
 			// Compact the library file
 			library.persistence.compactDatafile();
 			// Resolve the deferred with the array of changed files
 			deferred.resolve(changedFiles);
 		};
 
+		// Save count of changed files
+		var total = changedFiles.length;
+		// Save current and previous percentages
+		var currPercentage, prevPercentage;
 		// Push all the changed files onto the queue
-		refreshQueue.push(changedFiles);
+		refreshQueue.push(changedFiles, function() {
+			// Compare previous and current percentage, then set previous percentage
+			// We only want to log when percentage changes by at least 1/100th
+			currPercentage = Math.floor((1 - (refreshQueue.length() / total)) * 100);
+			if(currPercentage != prevPercentage) console.log(currPercentage + '%');
+			prevPercentage = currPercentage;
+		});
 
 		return deferred.promise;
 	};
