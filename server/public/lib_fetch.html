@@ -1,0 +1,43 @@
+<html>
+<head></head>
+<body>
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script>
+	var artists = {};
+
+	function addTitle(artist, albumartist, album, title) {
+		var actualArtist;
+		if(albumartist.length !== 0) actualArtist = albumartist[0];
+		if(artist.length !== 0) actualArtist = artist[0];
+		if(!actualArtist || actualArtist == '') actualArtist = '(Unknown)';
+
+		if(!artists[actualArtist]) {
+			artists[actualArtist] = { albums: [] };
+		}
+		if(!artists[actualArtist].albums[album]) {
+			artists[actualArtist].albums[album] = [];
+		}
+		artists[actualArtist].albums[album].push(title);
+	}
+
+	$.ajax('/library', {success:
+	function(library) {
+		var startTime = new Date();
+
+		$.each(library, function(i, entry) {
+			var meta = entry.metadata;
+
+			var title = meta.title;
+			var artist = meta.artist;
+			var albumartist = meta.albumartist;
+			var album = meta.album;
+
+			addTitle(artist, albumartist, album, title, entry);
+		});
+
+		console.log(artists);
+		console.log((new Date() - startTime) / 1000);
+	}});
+	</script>
+</body>
+</html>
