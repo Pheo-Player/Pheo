@@ -37,8 +37,12 @@ app.get('/library', function(req, res) {
 app.get('/library/:id', function(req, res) {
 	library.store.findOne({ _id: req.params.id }, function(err, data) {
 		if(err) endWithLibraryError(res);
-
-		res.json(data);
+		if(data == null) {
+			res.json({});
+		}
+		else {
+			res.json(data);
+		}
 	});
 });
 
