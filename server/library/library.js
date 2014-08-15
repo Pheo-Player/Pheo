@@ -86,9 +86,7 @@ function Library() {
 
 		// Dive through the library directory
 		dive(lib_path, function(err, file) {
-			if(err) {
-				throw err;
-			}
+			if(err) throw err;
 
 			// Push all files with fitting extensions onto the queue
 			var ext = path.extname(file);
