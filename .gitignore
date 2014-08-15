@@ -5,3 +5,4 @@ client/bower_components/
 client/app/app.js
 
 server/library.nedb
+server/config.json
