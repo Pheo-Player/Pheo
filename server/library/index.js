@@ -1,10 +1,15 @@
 var express = require('express'),
     app = express(),
 
-    Library = require('./library');
+    Library = require('./library')
+
+    nconf = require('../config/nconf');
 
 // Create and initialise the library
-var library = new Library();
+var lib_path = nconf.get('lib_path');
+var dbfile = __dirname + '/../' + nconf.get('dbfile'); // TODO this ain't nice
+
+var library = new Library(lib_path, dbfile);
 library.init();
 
 // We will reuse this function any time accessing the library fails

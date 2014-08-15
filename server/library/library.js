@@ -6,23 +6,20 @@ var Datastore = require('nedb'),
 
     q = require('q'),
     async = require('async'),
-    mmd = require('musicmetadata'),
-
-    nconf = require('../config/nconf');
+    mmd = require('musicmetadata');
 
 // The default concurrency of the queue operations
 var CONCURRENCY = 5;
 
-function Library() {
+function Library(lib_path, dbfile) {
 	var self = this;
 
 	// Get the library path from the config
-	var lib_path = nconf.get('lib_path');
 	if(lib_path === undefined) { throw 'lib_path is not set!'; }
 
 	// Load the datastore from the file as set in the config
 	var library = new Datastore({
-		filename: __dirname + '/../' + nconf.get('dbfile'), // TODO this ain't nice
+		filename: dbfile,
 		autoload: true
 	});
 	// Ensure indexing for the file[name] field in the datastore
