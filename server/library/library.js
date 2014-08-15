@@ -1,6 +1,7 @@
 var Datastore = require('nedb'),
 
     fs = require('fs'),
+    path = require('path'),
     dive = require('dive'),
 
     q = require('q'),
@@ -24,13 +25,69 @@ function Library() {
 		if(err) throw err;
 	});
 
-	self.refreshMetadata = function(changedFiles) {
+	self.checkAndUpdateTimestamps = function() {
+		var deferred = q.defer();
+
 		var activeRefreshes = 0;
+		var changedFiles = [];
 
-		async.each(changedFiles, function(file, cb) {
-			activeRefreshes++;
+		var ext;
+		dive(lib_path, function(err, file) {
+			if(err) {
+				throw err;
+			}
 
-			var parser = mmd(fs.createReadStream(file));
+			ext = path.extname(file);
+			if(ext == '.mp3' ||
+				ext == '.flac') { // TODO better matchers
+				activeRefreshes++;
+
+				fs.stat(file, function(err, stat) {
+					if(err) throw err;
+
+					library.findOne({ file: file }, function(err, savedFile) {
+						if(err) throw err;
+
+						var savedStamp = savedFile && savedFile.mtime;
+						var actualStamp = stat.mtime;
+
+						if(!savedFile || (actualStamp.getTime() !== savedStamp.getTime())) {
+							changedFiles.push(file);
+						}
+					});
+
+					library.update(
+						{ file: file },
+						{ $set: { file: file, mtime: stat.mtime } },
+						{ upsert: true },
+						function() {
+							if(--activeRefreshes == 0) {
+								console.log('Refreshed all timestamps in library folder.');
+								library.persistence.compactDatafile();
+								deferred.resolve(changedFiles);
+							}
+						});
+				});
+			}
+		});
+
+		return deferred.promise;
+	};
+
+	self.refreshMetadata = function(changedFiles) {
+		var startTime = new Date();
+		var deferred = q.defer();
+
+		var refreshQueue;
+		refreshQueue = async.queue(function(file, cb) {
+			var stream = fs.createReadStream(file);
+			stream.on('error', function(err) {
+				console.error('Reading metadata failed for', file + ':', err);
+				deferred.reject(err);
+			});
+
+			var parser = mmd(stream);
+
 			parser.on('metadata', function(data) {
 				delete data.picture;
 
@@ -38,70 +95,27 @@ function Library() {
 					{ file: file },
 					{ $set: { metadata: data } },
 					{},
-					function() {
-						if(--activeRefreshes == 0) {
-							console.log('Refreshed all metadata in library folder.');
-							library.persistence.compactDatafile();
-						}
-
-						cb();
-					}
+					cb
 				);
 			});
 			parser.on('done', function(err) {
-				if(err) {
-					if(--activeRefreshes == 0) {
-						console.log('Refreshed all metadata in library folder.');
-						library.persistence.compactDatafile();
-					}
-
-					cb();
-				}
+				if(err) { cb(); }
+				stream.destroy();
 			});
-		}, function(err) {
-			if(err) throw err;
-		});
-	};
+		}, 5);
 
-	self.checkAndUpdateTimestamps = function() {
-		var deferred = q.defer();
+		refreshQueue.drain = function() {
+			console.log('Refreshed all metadata.');
+			library.persistence.compactDatafile();
 
-		var activeRefreshes = 0;
-		var changedFiles = [];
+			deferred.resolve('Refreshed all metadata');
+			console.log('Took', (new Date() - startTime) / 1000, 's');
+		};
 
-		dive(lib_path, function(err, file) {
-			if(err) {
-				throw err;
-			}
-
-			activeRefreshes++;
-
-			fs.stat(file, function(err, stat) {
-				if(err) throw err;
-
-				library.findOne({ file: file }, function(err, savedFile) {
-					if(err) throw err;
-
-					var savedStamp = savedFile && savedFile.mtime;
-					var actualStamp = stat.mtime;
-
-					if(!savedFile || (actualStamp.getTime() !== savedStamp.getTime())) {
-						changedFiles.push(file);
-					}
-				});
-
-				library.update(
-					{ file: file },
-					{ $set: { file: file, mtime: stat.mtime } },
-					{ upsert: true },
-					function() {
-						if(--activeRefreshes == 0) {
-							console.log('Refreshed all timestamps in library folder.');
-							library.persistence.compactDatafile();
-							deferred.resolve(changedFiles);
-						}
-					});
-			});
+		var finished = 0, total = changedFiles.length;
+		refreshQueue.push(changedFiles, function() {
+			finished++;
+			console.log('finished', finished, 'of', total, '=', (finished*100.0 / total) + '%');
 		});
 
 		return deferred.promise;
@@ -109,9 +123,12 @@ function Library() {
 
 	self.init = function() {
 		self.checkAndUpdateTimestamps()
-			.then(function(changedFiles) {
-				self.refreshMetadata(changedFiles);
+		.then(function(changedFiles) {
+			self.refreshMetadata(changedFiles)
+			.then(function() {
+				
 			});
+		});
 	};
 }
 
