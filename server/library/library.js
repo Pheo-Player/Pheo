@@ -56,7 +56,8 @@ function Library(lib_path, dbfile) {
 					// IF the file does not exist in the DB yet (!savedFile)
 					// OR the saved and actual timestamps differ,
 					// push the current file to the changedFiles array
-					if(!savedFile || (actualStamp.getTime() !== savedStamp.getTime())) {
+					if(!savedFile || (actualStamp.getTime() !== savedStamp.getTime())
+						|| !savedFile.metadata) {
 						changedFiles.push(file);
 					}
 				});
