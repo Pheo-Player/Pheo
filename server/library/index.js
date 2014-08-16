@@ -18,7 +18,7 @@ function endWithLibraryError(res) {
 	res.end('Error while reading library');
 }
 
-// Middleware to check if the library is ready for all requests
+// Middleware to check if the library is ready for requests
 app.use(function(req, res, next) {
 	if(!library.store) {
 		res.status(404);
