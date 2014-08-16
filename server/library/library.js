@@ -184,8 +184,8 @@ function Library(lib_path, dbfile) {
 		// Push all the changed files onto the queue
 		refreshQueue.push(changedFiles, function() {
 			// Compare previous and current percentage, then set previous percentage
-			// We only want to log when percentage changes by at least 1/100th
-			currPercentage = Math.floor((1 - (refreshQueue.length() / total)) * 100);
+			// We only want to log when percentage changes by at least 1/10th
+			currPercentage = 10 * Math.floor(Math.floor((1 - (refreshQueue.length() / total)) * 10));
 			if(currPercentage != prevPercentage) console.log(currPercentage + '%');
 			prevPercentage = currPercentage;
 		});
