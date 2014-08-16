@@ -15,7 +15,7 @@ function Library(lib_path, dbfile) {
 	var self = this;
 
 	// Get the library path from the config
-	if(lib_path === undefined) { throw 'lib_path is not set!'; }
+	if(lib_path === undefined) throw new Error('lib_path is not set!');
 
 	// Load the datastore from the file as set in the config
 	var library = new Datastore({
@@ -194,6 +194,7 @@ function Library(lib_path, dbfile) {
 	};
 
 	self.init = function() {
+
 		// Check and update the timestamps,
 		self.checkAndUpdateTimestamps()
 		.then(function(changedFiles) {
