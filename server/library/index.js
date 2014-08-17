@@ -9,6 +9,9 @@ var express = require('express'),
 var lib_path = nconf.get('lib_path');
 var dbfile = __dirname + '/../' + nconf.get('dbfile'); // TODO this ain't nice
 
+// TODO handle this in the client on first startup
+if(!lib_path) throw new Error('lib_path is not set!');
+
 var library = new Library(lib_path, dbfile);
 library.init();
 
