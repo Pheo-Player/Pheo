@@ -47,6 +47,6 @@ function pheoServer() {
 	});
 
 	return app;
-};
+}
 
 module.exports = pheoServer();

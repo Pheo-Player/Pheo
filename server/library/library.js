@@ -56,9 +56,10 @@ function Library(lib_path, dbfile) {
 					// IF the file does not exist in the DB yet (!savedFile)
 					// OR the saved and actual timestamps differ,
 					// push the current file to the changedFiles array
-					if(!savedFile || (actualStamp.getTime() !== savedStamp.getTime())
-						|| !savedFile.metadata) {
-						changedFiles.push(file);
+					if(!savedFile ||
+						(actualStamp.getTime() !== savedStamp.getTime()) ||
+						!savedFile.metadata) {
+							changedFiles.push(file);
 					}
 				});
 
@@ -124,7 +125,7 @@ function Library(lib_path, dbfile) {
 			// was detected, an angry console message will be logged
 			// and the callback will be called. (The queue loves this!)
 			var dataStreamed = false;
-			stream.once('data', function() { dataStreamed = true; })
+			stream.once('data', function() { dataStreamed = true; });
 			stream.once('end', function() {
 				if(!dataStreamed) {
 					console.error(
@@ -195,7 +196,6 @@ function Library(lib_path, dbfile) {
 	};
 
 	self.init = function() {
-
 		// Check and update the timestamps,
 		self.checkAndUpdateTimestamps()
 		.then(function(changedFiles) {
@@ -208,6 +208,9 @@ function Library(lib_path, dbfile) {
 			});
 		});
 	};
+
+	// Always initialise at least once, on server start
+	self.init();
 }
 
 module.exports = Library;
