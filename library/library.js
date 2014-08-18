@@ -11,26 +11,96 @@ var Datastore = require('nedb'),
 // The default concurrency of the queue operations
 var CONCURRENCY = 5;
 
+/**
+ * The constructor function for the library.
+ * @param {string} lib_path The path in the file system where our music files are
+ * @param {string} dbfile The filename where the database file is located
+ */
 function Library(lib_path, dbfile) {
 	var self = this;
 
-	// Get the library path from the config
-	if(lib_path === undefined) throw new Error('lib_path is not set!');
+	/// Public API
+	self.get = get;
 
+	// Cached objects that will be set once and retrieved immediately thereafter
+	var status = {
+		initialised: false,
+		initPromise: null
+	};
+
+	/// Create the library database object from the dbfile
+	if(lib_path === undefined) throw new Error('lib_path is not set!');
 	// Load the datastore from the file as set in the config
-	var library = new Datastore({
+	var database = new Datastore({
 		filename: dbfile,
 		autoload: true
 	});
 	// Ensure indexing for the file[name] field in the datastore
-	library.ensureIndex({ fieldName: "file", unique: true }, function (err) {
+	database.ensureIndex({ fieldName: "file", unique: true }, function (err) {
 		if(err) throw err;
 	});
 
-	// Keep a public reference to the datastore.
-	self.store = null;
+	/// Always initialise on server start
+	init();
 
-	self.checkAndUpdateTimestamps = function() {
+	/**
+	 * Retrieves the initialised library database.
+	 * Returns a promise, because this database will not be available immediately.
+	 * @return {promise} A promise to retrieve the library database
+	 */
+	function get() {
+		if(status.initialised) {
+			var deferred = q.defer();
+			deferred.resolve(database);
+			return deferred.promise;
+		}
+		else {
+			return init();
+		}
+	}
+
+	/**
+	 * Initialises the library.
+	 * At the moment, this means:
+	 * - it checks for changed files since the last start
+	 * - it updates the metadata in the db for all changed files
+	 * @return {promise} A promise to initialise the library
+	 */
+	function init() {
+		// If there is no currently running init promise, create one
+		if(!status.initPromise) {
+			var deferred = q.defer();
+			status.initPromise = deferred.promise;
+
+			// Check and update the timestamps,
+			// then refresh metadata in the db for all changed files
+			// When this is done, resolve with the initialised library object
+			checkAndUpdateTimestamps(database)
+			.then(function(changedFiles) {
+				refreshMetadata(database, changedFiles)
+				.then(function() {
+					deferred.resolve(database);
+
+					// reset initPromise so this will execute again
+					// URGENT TODO this induces awkward behaviour at the moment
+					status.initPromise = null;
+				}, function(err) { deferred.reject(err); });
+			}, function(err) { deferred.reject(err); });
+		}
+
+		return status.initPromise;
+	};
+
+	// TODO delete missing files from the database
+	/**
+	 * Compares the stored mtime of all database entries with
+	 * the actual mtime of all music files in the library directory.
+	 * Resolve with an array of all changed files, and update
+	 * all differing timestamps in the database.
+	 * @param  {object} database The library database
+	 * @return {promise} A promise that resolves with all changed files
+	 */
+	function checkAndUpdateTimestamps(database) {
 		// Remember current time for duration calculation
 		var startTime = new Date();
 		// We return the promise of this deferred
@@ -44,54 +114,64 @@ function Library(lib_path, dbfile) {
 			fs.stat(file, function(err, stat) {
 				if(err) throw err;
 
-				// Find the file with the given filename
-				library.findOne({ file: file }, function(err, savedFile) {
+				// Find the db entry with the given filename. The function also
+				// executes when there was no such entry found, in which case savedFile
+				// will be null. We use this to our advantage.
+				database.findOne({ file: file }, function(err, savedFile) {
 					if(err) throw err;
 
-					// Read the last known stamp from the database
+					// Read the last known stamp from the database,
+					// and the current stamp from the file stat
 					var savedStamp = savedFile && savedFile.mtime;
-					// Read the current stamp from the file stat
 					var actualStamp = stat.mtime;
 
-					// IF the file does not exist in the DB yet (!savedFile)
+					// IF the file does not exist in the DB yet (!savedFile),
 					// OR the saved and actual timestamps differ,
+					// OR the database entry does not have any metadata,
 					// push the current file to the changedFiles array
+
+					// TODO push files with missing metadata to a different array (?)
 					if(!savedFile ||
 						(actualStamp.getTime() !== savedStamp.getTime()) ||
 						!savedFile.metadata) {
-							changedFiles.push(file);
+
+						changedFiles.push(file);
+
+						// After comparing the timestamps, we know which files have changed
+						// and can update the last known timestamp for their DB entries
+						database.update(
+							{ file: file },
+							{ $set: { file: file, mtime: stat.mtime } },
+							{ upsert: true });
 					}
+
+					// We call back here, as there is no need to
+					// wait for the update operations to complete
+					cb();
 				});
 
-				// After comparing the timestamps, we know which files have changed
-				// and can update the last known timestamp for their DB entries
-				library.update(
-					{ file: file },
-					{ $set: { file: file, mtime: stat.mtime } },
-					{ upsert: true },
-					cb); // Call the callback (for the queue) when library update finishes
 			});
 		}, CONCURRENCY);
 
-		// When the queue has completed:
+		// When the queue has completed,
+		// - log the needed time
+		// - compact the database
+		// - resolve with an array of all changed files
 		refreshQueue.drain = function() {
-			// Log the time needed
-			console.log('Refreshed all timestamps in',
+			console.log('Checked all timestamps in',
 				(new Date() - startTime) / 1000 + 's');
-			// Compact the library file
-			library.persistence.compactDatafile();
-			// Resolve the deferred with the array of changed files
+			database.persistence.compactDatafile();
 			deferred.resolve(changedFiles);
 		};
 
-		// Dive through the library directory
+		/// Dive through library directory and add all music files to the queue
 		dive(lib_path, function(err, file) {
 			if(err) throw err;
 
-			// Push all files with fitting extensions onto the queue
+			// TODO better/more matchers for all supported extensions!
 			var ext = path.extname(file);
 			if(ext == '.mp3' ||
-				ext == '.flac') { // TODO better matchers
+				ext == '.flac') {
 				refreshQueue.push(file);
 			}
 		});
@@ -99,7 +179,13 @@ function Library(lib_path, dbfile) {
 		return deferred.promise;
 	};
 
-	self.refreshMetadata = function(changedFiles) {
+	/**
+	 * Refreshes the metadata inside a db for a given array of files.
+	 * @param  {object} database The library datastore.
+	 * @param  {array} files The array of affected files
+	 * @return {promise} A promise to refresh the metadata, resolves with `files`.
+	 */
+	function refreshMetadata(database, files) {
 		// Remember current time for duration calculation
 		var startTime = new Date();
 		// We return the promise of this deferred
@@ -145,7 +231,7 @@ function Library(lib_path, dbfile) {
 
 				// Update the file's db entry metadata and call
 				// the queue callback when this operation finishes.
-				library.update(
+				database.update(
 					{ file: file },
 					{ $set: { metadata: data } },
 					{},
@@ -173,18 +259,18 @@ function Library(lib_path, dbfile) {
 			// Log the time needed
 			console.log('Refreshed all metadata in',
 				(new Date() - startTime) / 1000 + 's');
-			// Compact the library file
-			library.persistence.compactDatafile();
+			// Compact the database file
+			database.persistence.compactDatafile();
 			// Resolve the deferred with the array of changed files
-			deferred.resolve(changedFiles);
+			deferred.resolve(files);
 		};
 
 		// Save count of changed files
-		var total = changedFiles.length;
+		var total = files.length;
 		// Save current and previous percentages
 		var currPercentage, prevPercentage;
 		// Push all the changed files onto the queue
-		refreshQueue.push(changedFiles, function() {
+		refreshQueue.push(files, function() {
 			// Compare previous and current percentage, then set previous percentage
 			// We only want to log when percentage changes by at least 1/10th
 			currPercentage = 10 * Math.floor(Math.floor((1 - (refreshQueue.length() / total)) * 10));
@@ -194,47 +280,6 @@ function Library(lib_path, dbfile) {
 
 		return deferred.promise;
 	};
-
-	var initPromise = null;
-	self.init = function() {
-		// If there is no currently active promise to init the library,
-		// create one and save it in initPromise
-		if(!initPromise) {
-			var deferred = q.defer();
-
-			// Check and update the timestamps,
-			self.checkAndUpdateTimestamps()
-			.then(function(changedFiles) {
-				// then refresh the metadata for all changed files
-				self.refreshMetadata(changedFiles)
-				.then(function() {
-					// and only then make the initialized store
-					// publicly available on this object
-					self.store = library;
-					deferred.resolve(self.store);
-					initPromise = null;
-				}, function(err) { deferred.reject(err); });
-			}, function(err) { deferred.reject(err); });
-
-			initPromise = deferred.promise;
-		}
-
-		return initPromise;
-	};
-
-	self.get = function() {
-		if(self.store) {
-			var deferred = q.defer();
-			deferred.resolve(self.store);
-			return deferred.promise;
-		}
-		else {
-			return self.init();
-		}
-	}
-
-	// Always initialise at least once, on server start
-	self.init();
 }
 
 module.exports = Library;

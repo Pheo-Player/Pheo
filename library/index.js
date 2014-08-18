@@ -5,8 +5,6 @@ var express = require('express'),
 
     nconf = require(__dirname + '/../config/nconf');
 
-console.log(__dirname);
-
 // Create and initialise the library
 var lib_path = nconf.get('lib_path');
 var dbfile = __dirname + '/../' + nconf.get('dbfile'); // TODO this ain't nice
