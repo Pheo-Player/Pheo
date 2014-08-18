@@ -2,7 +2,7 @@
 node_modules/
 
 client/bower_components/
-client/app/app.js
+client/app.js
 
 server/library.nedb
 server/library.nedb*
