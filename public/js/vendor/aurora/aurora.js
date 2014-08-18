@@ -3927,5 +3927,3 @@ module.exports = BufferSource;
 
 (1)
 });
-
-//# sourceMappingURL=aurora.js.map

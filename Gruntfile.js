@@ -8,32 +8,32 @@ module.exports = function(grunt) {
 
 				},
 				src: [
-					'client/app/pheo-app.js',
-					'client/app/**/*.js',
-					'!client/app/**/*.test.js',
+					'<%= pkg.devConfig.clientDir %>app/pheo-app.js',
+					'<%= pkg.devConfig.clientDir %>app/**/*.js',
+					'!<%= pkg.devConfig.clientDir %>app/**/*.test.js',
 				],
-				dest: 'client/app.js',
+				dest: '<%= pkg.devConfig.clientDir %>app.js',
 			},
 		},
 
 		sass: {
 			main: {
 				files: {
-					'client/css/main.css': 'client/css/main.scss',
-					'client/fonts/fonts.css': 'client/fonts/fonts.scss'
+					'<%= pkg.devConfig.clientDir %>css/main.css': '<%= pkg.devConfig.clientDir %>css/main.scss',
+					'<%= pkg.devConfig.clientDir %>fonts/fonts.css': '<%= pkg.devConfig.clientDir %>fonts/fonts.scss'
 				}
 			}
 		},
 
 		watch: {
 			sass: {
-				files: ['client/css/**/*.scss'],
+				files: ['<%= pkg.devConfig.clientDir %>css/**/*.scss'],
 				tasks: ['sass'],
 				options: { spawn: false }
 			},
 
 			app: {
-				files: ['client/app/**/*.js'],
+				files: ['<%= pkg.devConfig.clientDir %>app/**/*.js'],
 				tasks: ['concat'],
 				options: { spawn: false }
 			},

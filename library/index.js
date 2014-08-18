@@ -3,7 +3,9 @@ var express = require('express'),
 
     Library = require('./library'),
 
-    nconf = require('../config/nconf');
+    nconf = require(__dirname + '/../config/nconf');
+
+console.log(__dirname);
 
 // Create and initialise the library
 var lib_path = nconf.get('lib_path');

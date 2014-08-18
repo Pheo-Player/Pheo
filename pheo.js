@@ -1,7 +1,7 @@
 var App = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
 
-var server = require('./server/pheo-server.js')(); // start server
+var server = require('./pheo-server'); // start server
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -28,7 +28,8 @@ App.on('ready', function() {
 	});
 
 	// and load the index.html of the App.
-	win.loadUrl('file://' + __dirname + '/client/index.html');
+	// TODO load the port from the config
+	win.loadUrl('http://localhost:52430/');
 
 	// Emitted when the window is closed.
 	win.on('closed', function() {

@@ -13,11 +13,7 @@ function pheoServer() {
 	var conf = require('./config/nconf');
 	app.set('port', conf.get('port'));
 
-	/** Routes **/
-	app.get('/', function(req, res) {
-		res.end('PheoServer is running! <3');
-	});
-	
+	/** Routes **/	
 	app.use(express.static(__dirname + '/public'));
 	app.use(libraryApp);
 

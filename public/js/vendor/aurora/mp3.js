@@ -7700,7 +7700,4 @@ exports.makeArray = function(lengths, Type) {
     return ret;
 };
 
-},{}]},{},[1])
-
-
-//# sourceMappingURL=mp3.js.map
+},{}]},{},[1]);

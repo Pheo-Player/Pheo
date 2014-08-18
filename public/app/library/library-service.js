@@ -24,6 +24,7 @@ angular.module('pheoApp')
 		return deferred.promise;
 	};
 
+	// TODO better logic for collaboration albums which don't have albumartist set
 	self.getAlbums = function() {
 		var deferred = $q.defer();
 

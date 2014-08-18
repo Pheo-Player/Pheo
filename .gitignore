@@ -1,9 +1,9 @@
 .sass-cache/
 node_modules/
 
-client/bower_components/
-client/app.js
+public/bower_components/
+public/app.js
 
-server/library.nedb
-server/library.nedb*
-server/config.json
+db/library.nedb
+db/library.nedb*
+config/config.json
