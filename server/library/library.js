@@ -188,26 +188,50 @@ function Library(lib_path, dbfile) {
 			// Compare previous and current percentage, then set previous percentage
 			// We only want to log when percentage changes by at least 1/10th
 			currPercentage = 10 * Math.floor(Math.floor((1 - (refreshQueue.length() / total)) * 10));
-			if(currPercentage != prevPercentage) console.log(currPercentage + '%');
+			if(currPercentage != prevPercentage) console.log('Refreshing metadata...', currPercentage + '%');
 			prevPercentage = currPercentage;
 		});
 
 		return deferred.promise;
 	};
 
+	var initPromise = null;
 	self.init = function() {
-		// Check and update the timestamps,
-		self.checkAndUpdateTimestamps()
-		.then(function(changedFiles) {
-			// then refresh the metadata for all changed files
-			self.refreshMetadata(changedFiles)
-			.then(function() {
-				// and only then make the initialized store
-				// publicly available on this object
-				self.store = library;
-			});
-		});
+		// If there is no currently active promise to init the library,
+		// create one and save it in initPromise
+		if(!initPromise) {
+			var deferred = q.defer();
+
+			// Check and update the timestamps,
+			self.checkAndUpdateTimestamps()
+			.then(function(changedFiles) {
+				// then refresh the metadata for all changed files
+				self.refreshMetadata(changedFiles)
+				.then(function() {
+					// and only then make the initialized store
+					// publicly available on this object
+					self.store = library;
+					deferred.resolve(self.store);
+					initPromise = null;
+				}, function(err) { deferred.reject(err); });
+			}, function(err) { deferred.reject(err); });
+
+			initPromise = deferred.promise;
+		}
+
+		return initPromise;
 	};
+
+	self.get = function() {
+		if(self.store) {
+			var deferred = q.defer();
+			deferred.resolve(self.store);
+			return deferred.promise;
+		}
+		else {
+			return self.init();
+		}
+	}
 
 	// Always initialise at least once, on server start
 	self.init();

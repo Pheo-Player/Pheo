@@ -20,29 +20,20 @@ function endWithLibraryError(res) {
 	res.end('Error while reading library');
 }
 
-// Middleware to check if the library is ready for requests
-app.use(function(req, res, next) {
-	if(!library.store) {
-		res.status(404);
-		res.end('Library is not ready');
-	}
-	else {
-		next();
-	}
-});
-
 // INDEX action
 app.get('/library', function(req, res) {
-	library.store.find({}, function(err, data) {
-		if(err) endWithLibraryError(res);
+	library.get().then(function(store) {
+		store.find({}, function(err, data) {
+			if(err) endWithLibraryError(res);
 
-		res.json(data);
+			res.json(data);
+		});
 	});
 });
 
 // READ action
 app.get('/library/:id', function(req, res) {
-	library.store.findOne({ _id: req.params.id }, function(err, data) {
+	library.get().findOne({ _id: req.params.id }, function(err, data) {
 		if(err) endWithLibraryError(res);
 		if(data === null) {
 			res.json({});
