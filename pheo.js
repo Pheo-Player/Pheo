@@ -10,8 +10,9 @@ var win = null;
 
 // Quit when all windows are closed.
 App.on('window-all-closed', function() {
-	if (process.platform != 'darwin')
-		App.quit();
+	if (process.platform != 'darwin') App.quit();
+
+	process.exit(1);
 });
 
 // This method will be called when the app is ready.
