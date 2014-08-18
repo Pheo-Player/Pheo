@@ -30,32 +30,9 @@
 
 <body ng-app="pheoApp">
 	<!-- Title Bar -->
-	<div id="title-bar">
-		<div id="drag">
-			<content></content>
-		</div>
+	<div id="title-bar"><div id="drag"></div><div id="actions"><button id="minimize-win"></button><button id="maximize-win"></button><button id="close-win"></button></div></div>
 
-		<div id="actions">
-			<button id="minimize-win"></button>
-			<button id="maximize-win"></button>
-			<button id="close-win"></button>
-		</div>
-	</div>
-
-	<div id="outer-drawer" ng-controller="PlayerController as playCtrl">
-		<input type="text"
-		       ng-model="playCtrl.filePath">
-		<button ng-click="playCtrl.loadFile()">Load</button>
-		<button ng-click="playCtrl.playPause()">Play/Pause</button>
-    <button ng-click="playCtrl.stop()">Stop</button>
-	</div>
-
-	<!-- Player Bar -->
-	<paper-icon-button ng-click="ctrl.playPause()"
-	                   icon="av:play-arrow"
-	                   size="48"
-	                   rippleColor="#fff">
-	</paper-icon-button>
+	
 
 	<!-- Aurora.js -->
 	<script src="js/vendor/aurora/aurora.js"></script>
