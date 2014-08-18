@@ -24,21 +24,23 @@ describe('Library Service', function() {
 
 
 	it('fetches the library via http and makes it accessible publicly', function(done) {
-		libSvc.loadLibrary()
-			.then(function(data) {
-				expect(_.isEqual(data, mockLibrary)).toEqual(true);
-			}, function(err) {
-				expect(undefined).toEqual(true);
-			})
-			.finally(done);
+		libSvc.getLibrary()
+		.then(function(data) {
+			expect(_.isEqual(data, mockLibrary)).toEqual(true);
+		}, function(err) {
+			expect(undefined).toEqual(true);
+		})
+		.finally(done);
 
 		httpMock.flush();
 	});
 
 	it('exposes a function that returns the library as a sorted collection of albums', function(done) {
-		libSvc.loadLibrary()
-			.then(function(data) {
-				expect(_.isEqual(libSvc.getAlbums(), [
+		libSvc.getLibrary()
+		.then(function(data) {
+			libSvc.getAlbums()
+			.then(function(albums) {
+				expect(_.isEqual(albums, [
 					{
 						name: "Hi / Lo",
 						artist: "Bobby and the Tests",
@@ -52,8 +54,8 @@ describe('Library Service', function() {
 						tracks: [a2t1]
 					}
 				])).toEqual(true);
-			})
-			.finally(done);
+			}).finally(done);
+		});
 
 		httpMock.flush();
 	});

@@ -1,9 +1,9 @@
 angular.module('pheoApp')
 	.service('LibrarySvc', ['$q', '$http', function($q, $http) {
 		var self = this;
-
 		var library;
-		self.loadLibrary = function() {
+
+		self.getLibrary = function() {
 			var deferred = $q.defer();
 
 			// If library has been fetched before, resolve with cached object
@@ -13,111 +13,120 @@ angular.module('pheoApp')
 			// Else, fetch library from server, then resolve with library object
 			else {
 				$http.get('/library')
-					.then(function(response) {
-						library = response.data;
-						deferred.resolve(library);
-					}, function(err) {
-						deferred.reject(err);
-					});
+				.then(function(response) {
+					library = response.data;
+					deferred.resolve(library);
+				}, function(err) {
+					deferred.reject(err);
+				});
 			}
 
 			return deferred.promise;
 		};
 
 		self.getAlbums = function() {
-			var albums = {};
-			var albumsSorted = [];
+			var deferred = $q.defer();
 
-			function addTitle(albums, track) {
-				var meta = track.metadata;
+			self.getLibrary()
+			.then(function(library) {
+				var albums = {};
+				var albumsSorted = [];
 
-				// Define a default string to use when values are unknown
-				var unknownValue = '(Unknown)';
-				// Cascading possible values for the album's artist:
-				var actualArtist, actualAlbum;
+				function addTitle(albums, track) {
+					var meta = track.metadata;
 
-				// Cycle through all albumartists first
-				for(var i = 0, j = meta.albumartist.length; i < j; i++) {
-					actualArtist = actualArtist || meta.albumartist[i];
-				}
-				// Then cycle through all artists
-				for(i = 0, j = meta.artist.length; i < j; i++) {
-					actualArtist = actualArtist || meta.artist[i];
-				}
-				// If all else fails, assign unknown value
-				actualArtist = actualArtist || unknownValue;
+					// Define a default string to use when values are unknown
+					var unknownValue = '(Unknown)';
+					// Cascading possible values for the album's artist:
+					var actualArtist, actualAlbum;
 
-				// Set album title
-				actualAlbum = meta.album;
+					// Cycle through all albumartists first
+					for(var i = 0, j = meta.albumartist.length; i < j; i++) {
+						actualArtist = actualArtist || meta.albumartist[i];
+					}
+					// Then cycle through all artists
+					for(i = 0, j = meta.artist.length; i < j; i++) {
+						actualArtist = actualArtist || meta.artist[i];
+					}
+					// If all else fails, assign unknown value
+					actualArtist = actualArtist || unknownValue;
 
-				// Concatenating artist and album name to have 'unique' identifiers
-				var albumID = actualArtist + '::' + actualAlbum;
-				// Create new object with albumID as index if it does not exist
-				if(!albums[albumID]) {
-					albums[albumID] = {
-						name: actualAlbum,
-						artist: actualArtist,
-						year: meta.year,
-						tracks: [],
-					};
-				}
+					// Set album title
+					actualAlbum = meta.album;
 
-				// Push the track onto the album with the given albumID
-				albums[albumID].tracks.push(track);
-			}
+					// Concatenating artist and album name to have 'unique' identifiers
+					var albumID = actualArtist + '::' + actualAlbum;
+					// Create new object with albumID as index if it does not exist
+					if(!albums[albumID]) {
+						albums[albumID] = {
+							name: actualAlbum,
+							artist: actualArtist,
+							year: meta.year,
+							tracks: [],
+						};
+					}
 
-			// Cycle through all library entries and call addTitle on albums with each
-			for(var i = 0, j = library.length; i < j; i++) {
-				var entry = library[i];
-
-				if(!entry.metadata) {
-					// TODO write these to an array and notify the user of them
-					console.log('No metadata for', entry);
-					return;
+					// Push the track onto the album with the given albumID
+					albums[albumID].tracks.push(track);
 				}
 
-				addTitle(albums, entry);
-			};
+				// Cycle through all library entries and call addTitle on albums with each
+				for(var i = 0, j = library.length; i < j; i++) {
+					var entry = library[i];
 
-			// Sort all albums' tracks by track numbers,
-			// and push each album onto the albumsSorted array to sort it afterwards
-			for(albumName in albums) {
-				if(albums.hasOwnProperty(albumName)) {
-					var album = albums[albumName];
+					if(!entry.metadata) {
+						// TODO write these to an array and notify the user of them
+						console.log('No metadata for', entry);
+						return;
+					}
 
-					album.tracks.sort(function(a, b) {
-						var noA = a.metadata.track.no, noB = b.metadata.track.no;
-						var titleA = a.metadata.title, titleB = b.metadata.title;
+					addTitle(albums, entry);
+				};
 
-						// first by track number, then by title
-						if(noA < noB) return -1;
-						if(noA > noB) return 1;
-						if(titleA > titleB) return -1;
-						if(titleA < titleB) return 1;
+				// Sort all albums' tracks by track numbers,
+				// and push each album onto the albumsSorted array to sort it afterwards
+				for(albumName in albums) {
+					if(albums.hasOwnProperty(albumName)) {
+						var album = albums[albumName];
 
-						return 0;
-					});
+						album.tracks.sort(function(a, b) {
+							var noA = a.metadata.track.no, noB = b.metadata.track.no;
+							var titleA = a.metadata.title, titleB = b.metadata.title;
 
-					albumsSorted.push(album);
-				}
-			};
+							// first by track number, then by title
+							if(noA < noB) return -1;
+							if(noA > noB) return 1;
+							if(titleA > titleB) return -1;
+							if(titleA < titleB) return 1;
 
-			// Sort the albumsSorted array
-			albumsSorted.sort(function(a, b) {
-				var artistA = a.artist.toLowerCase(), artistB = b.artist.toLowerCase();
-				var albumA = a.name.toLowerCase(), albumB = b.name.toLowerCase();
+							return 0;
+						});
 
-				// first by artist, then by album name
-				if(artistA > artistB) return 1;
-				if(artistA < artistB) return -1;
-				if(albumA > albumB) return 1;
-				if(albumA < albumB) return -1;
+						albumsSorted.push(album);
+					}
+				};
 
-				return 0;
+				// Sort the albumsSorted array
+				albumsSorted.sort(function(a, b) {
+					var artistA = a.artist.toLowerCase(), artistB = b.artist.toLowerCase();
+					var albumA = a.name.toLowerCase(), albumB = b.name.toLowerCase();
+
+					// first by artist, then by album name
+					if(artistA > artistB) return 1;
+					if(artistA < artistB) return -1;
+					if(albumA > albumB) return 1;
+					if(albumA < albumB) return -1;
+
+					return 0;
+				});
+
+				// Return the sorted album array,
+				// each album holding tracks sorted by title number
+				deferred.resolve(albumsSorted);
+			}, function(err) {
+				deferred.reject(err);
 			});
 
-			// Return the sorted album array,
-			// each album holding tracks sorted by title number
-			return albumsSorted;
+			return deferred.promise;
 		};
 	}]);
