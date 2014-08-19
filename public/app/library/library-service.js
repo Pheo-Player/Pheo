@@ -77,11 +77,11 @@ angular.module('pheoApp')
 
 				if(!entry.metadata) {
 					// TODO write these to an array and notify the user of them
-					console.log('No metadata for', entry);
-					return;
+					console.error('No metadata for', entry);
 				}
-
-				addTitle(albums, entry);
+				else {
+					addTitle(albums, entry);
+				}
 			};
 
 			// Sort all albums' tracks by track numbers,
