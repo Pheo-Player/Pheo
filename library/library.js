@@ -8,163 +8,94 @@ var Datastore = require('nedb'),
     async = require('async'),
     mmd = require('musicmetadata');
 
-// The default concurrency of the queue operations
-var CONCURRENCY = 5;
+module.exports = Library;
 
 /**
  * The constructor function for the library.
+ * 
  * @param {string} lib_path The path in the file system where our music files are
  * @param {string} dbfile The filename where the database file is located
  */
 function Library(lib_path, dbfile) {
-	var self = this;
+	if(lib_path === undefined) throw new Error('lib_path is not set!');
 
-	/// Public API
-	self.get = get;
+	var self = this,
+	    CONCURRENCY = 5,
 
-	// Cached objects that will be set once and retrieved immediately thereafter
-	var status = {
-		initialised: false,
-		initPromise: null
+	    database = null,
+	    initPromise = null;
+
+	// API
+	self.get = init; // Just tunnel get() to init() for now
+
+	// Create the library database object from the dbfile
+	database = getDatabase(dbfile);
+	init(database, lib_path);
+
+	/**
+	 * Gets a database from a database file's path
+	 * 
+	 * @return {object}
+	 */
+	function getDatabase(dbfile) {
+		// Load the datastore from the file as set in the config
+		var database = new Datastore({
+			filename: dbfile,
+			autoload: true
+		});
+		// Ensure indexing for the file[name] field in the datastore
+		database.ensureIndex({ fieldName: "file", unique: true }, function (err) {
+			if(err) throw err;
+		});
+
+		return database;
 	};
 
-	/// Create the library database object from the dbfile
-	if(lib_path === undefined) throw new Error('lib_path is not set!');
-	// Load the datastore from the file as set in the config
-	var database = new Datastore({
-		filename: dbfile,
-		autoload: true
-	});
-	// Ensure indexing for the file[name] field in the datastore
-	database.ensureIndex({ fieldName: "file", unique: true }, function (err) {
-		if(err) throw err;
-	});
-
-	/// Always initialise on server start
-	init();
-
 	/**
-	 * Retrieves the initialised library database.
-	 * Returns a promise, because this database will not be available immediately.
-	 * @return {promise} A promise to retrieve the library database
+	 * Initialises the database.
+	 * 
+	 * @return {promise} A promise to initialise the database
 	 */
-	function get() {
-		if(status.initialised) {
-			var deferred = q.defer();
-			deferred.resolve(database);
-			return deferred.promise;
-		}
-		else {
-			return init();
-		}
-	}
-
-	/**
-	 * Initialises the library.
-	 * At the moment, this means:
-	 * - it checks for changed files since the last start
-	 * - it updates the metadata in the db for all changed files
-	 * @return {promise} A promise to initialise the library
-	 */
-	function init() {
+	function init(database, lib_path) {
 		// If there is no currently running init promise, create one
-		if(!status.initPromise) {
+		if(!initPromise) {
 			var deferred = q.defer();
-			status.initPromise = deferred.promise;
+			initPromise = deferred.promise;
 
 			// Check and update the timestamps,
 			// then refresh metadata in the db for all changed files
 			// When this is done, resolve with the initialised library object
-			checkAndUpdateTimestamps(database)
-			.then(function(changedFiles) {
+			checkAndUpdateTimestamps(database, lib_path)
+			.then(function refreshMeta(changedFiles) {
 				refreshMetadata(database, changedFiles)
-				.then(function() {
+				.then(function initialised() {
 					deferred.resolve(database);
-
-					// reset initPromise so this will execute again
-					// URGENT TODO this induces awkward behaviour at the moment
-					status.initPromise = null;
 				}, function(err) { deferred.reject(err); });
 			}, function(err) { deferred.reject(err); });
 		}
 
-		return status.initPromise;
-	};
+		return initPromise;
+	}
 
-	// TODO delete missing files from the database
 	/**
 	 * Compares the stored mtime of all database entries with
 	 * the actual mtime of all music files in the library directory.
-	 * Resolve with an array of all changed files, and update
+	 * Resolves with an array of all changed files, and updates
 	 * all differing timestamps in the database.
+	 * 
 	 * @param  {object} database The library database
+	 * 
 	 * @return {promise} A promise that resolves with all changed files
 	 */
-	function checkAndUpdateTimestamps(database) {
-		// Remember current time for duration calculation
-		var startTime = new Date();
-		// We return the promise of this deferred
+	function checkAndUpdateTimestamps(database, lib_path) {
+		// TODO delete missing files from the database
 		var deferred = q.defer();
 
-		// The files that have a different mtime stamp are stored in this array
+		// The files that have been changed are stored in this array
 		var changedFiles = [];
 
-		// Create the async queue to refresh the timestamps
-		var refreshQueue = async.queue(function(file, cb) {
-			fs.stat(file, function(err, stat) {
-				if(err) throw err;
-
-				// Find the db entry with the given filename. The function also
-				// executes when there was no such entry found, in which case savedFile
-				// will be null. We use this to our advantage.
-				database.findOne({ file: file }, function(err, savedFile) {
-					if(err) throw err;
-
-					// Read the last known stamp from the database,
-					// and the current stamp from the file stat
-					var savedStamp = savedFile && savedFile.mtime;
-					var actualStamp = stat.mtime;
-
-					// IF the file does not exist in the DB yet (!savedFile),
-					// OR the saved and actual timestamps differ,
-					// OR the database entry does not have any metadata,
-					// push the current file to the changedFiles array
-
-					// TODO push files with missing metadata to a different array (?)
-					if(!savedFile ||
-						(actualStamp.getTime() !== savedStamp.getTime()) ||
-						!savedFile.metadata) {
-
-						changedFiles.push(file);
-
-						// After comparing the timestamps, we know which files have changed
-						// and can update the last known timestamp for their DB entries
-						database.update(
-							{ file: file },
-							{ $set: { file: file, mtime: stat.mtime } },
-							{ upsert: true });
-					}
-
-					// We call back here, as there is no need to
-					// wait for the update operations to complete
-					cb();
-				});
-
-			});
-		}, CONCURRENCY);
-
-		// When the queue has completed,
-		// - log the needed time
-		// - compact the database
-		// - resolve with an array of all changed files
-		refreshQueue.drain = function() {
-			console.log('Checked all timestamps in',
-				(new Date() - startTime) / 1000 + 's');
-			database.persistence.compactDatafile();
-			deferred.resolve(changedFiles);
-		};
-
 		/// Dive through library directory and add all music files to the queue
+		var refreshQueue = createTimestampRefreshQueue(database, lib_path);
 		dive(lib_path, function(err, file) {
 			if(err) throw err;
 
@@ -177,6 +108,68 @@ function Library(lib_path, dbfile) {
 		});
 
 		return deferred.promise;
+
+
+		/**
+		 * Creates an async queue to refresh timestamps 
+		 * 
+		 * @param {object} database The database to refresh
+		 * @param {string} lib_path The library path to dive through
+		 * 
+		 * @return {object} The async queue
+		 */
+		function createTimestampRefreshQueue(database, lib_path) {
+			console.time('checkAndUpdateTimestamps');
+
+			var refreshQueue = async.queue(function refreshTimestamp(file, cb) {
+				fs.stat(file, function(err, stat) {
+					if(err) throw err;
+
+					// Find the db entry with the given filename. The function also
+					// executes when there was no such entry found, in which case savedFile
+					// will be null. We use this to our advantage.
+					database.findOne({ file: file }, function(err, savedFile) {
+						if(err) throw err;
+
+						// Read the last known stamp from the database,
+						// and the current stamp from the file stat
+						var savedStamp = savedFile && savedFile.mtime;
+						var actualStamp = stat.mtime;
+
+						if(!savedFile ||
+						(actualStamp.getTime() !== savedStamp.getTime()) ||
+						!savedFile.metadata) {
+
+							// TODO push files with missing metadata to a different array (?)
+							changedFiles.push(file);
+
+							// Update the mtime stamp in the database for this changed file
+							database.update(
+								{ file: file },
+								{ $set: { file: file, mtime: stat.mtime } },
+								{ upsert: true });
+						}
+
+						// We call back here, as there is no need to
+						// wait for the update operations to complete
+						cb();
+					});
+
+				});
+			}, CONCURRENCY);
+
+			// When the queue has completed,
+			// - log the needed time
+			// - compact the database
+			// - resolve with an array of all changed files
+			refreshQueue.drain = function() {
+				console.timeEnd('checkAndUpdateTimestamp');
+				database.persistence.compactDatafile();
+				deferred.resolve(changedFiles);
+			};
+
+			return refreshQueue;
+		}
 	};
 
 	/**
@@ -186,84 +179,8 @@ function Library(lib_path, dbfile) {
 	 * @return {promise} A promise to refresh the metadata, resolves with `files`.
 	 */
 	function refreshMetadata(database, files) {
-		// Remember current time for duration calculation
-		var startTime = new Date();
 		// We return the promise of this deferred
 		var deferred = q.defer();
-
-		// Create the async queue to refresh the metadata
-		var refreshQueue = async.queue(function(file, cb) {
-			// Create read stream for the current file
-			var stream = fs.createReadStream(file);
-
-			stream.on('error', function(err) {
-				console.error('Reading metadata failed for', file + ':', err);
-				deferred.reject(err);
-			});
-
-			// Workaround for the case of zero-byte files
-			// preventing the queue from completing.
-			//
-			// 'dataStreamed' is set to true when the 'data' event fires
-			// (does not happen for 0byte files).
-			//
-			// When the stream ends, this variable is checked. If a zero-byte file
-			// was detected, an angry console message will be logged
-			// and the callback will be called. (The queue loves this!)
-			var dataStreamed = false;
-			stream.once('data', function() { dataStreamed = true; });
-			stream.once('end', function() {
-				if(!dataStreamed) {
-					console.error(
-						'Bullshit detector is running hot: File with 0 bytes found', file);
-					cb();
-				}
-			});
-
-			// Get metadata parser for the current file stream
-			var parser = mmd(stream);
-
-			// Listen for the metadata event to fire
-			parser.once('metadata', function(data) {
-				// Delete the picture property from the metadata,
-				// as we don't want to cache this in the database.
-				delete data.picture;
-
-				// Update the file's db entry metadata and call
-				// the queue callback when this operation finishes.
-				database.update(
-					{ file: file },
-					{ $set: { metadata: data } },
-					{},
-					cb);
-			});
-			// Listen for the parser to be done.
-			parser.once('done', function(err) {
-				// Only fire the callback here when there was an error
-				// reading the metadata. This is because if the metadata is read,
-				// both the 'metadata' and 'done' events fire, thus the callback
-				// would be called twice (which is illegal).
-				if(err) {
-					console.error(err, file);
-					cb();
-				}
-
-				// Destroy the stream when the parser is done to save strain on
-				// the file system.
-				stream.destroy();
-			});
-		}, CONCURRENCY);
-
-		// When the queue has completed:
-		refreshQueue.drain = function() {
-			// Log the time needed
-			console.log('Refreshed all metadata in',
-				(new Date() - startTime) / 1000 + 's');
-			// Compact the database file
-			database.persistence.compactDatafile();
-			// Resolve the deferred with the array of changed files
-			deferred.resolve(files);
-		};
 
 		// Save count of changed files
 		var total = files.length;
@@ -279,7 +196,75 @@ function Library(lib_path, dbfile) {
 		});
 
 		return deferred.promise;
+
+
+		/**
+		 * Creates an async queue to refresh metadata
+		 * 
+		 * @param {object} database The database to refresh
+		 * @param {array} files An array of files whose stored metadata
+		 * should be updated in the database
+		 * 
+		 * @return {object} The async queue
+		 */
+		function createRefreshQueue(database, files) {
+			console.time('refreshMetadata');
+
+			// Create the async queue to refresh the metadata
+			var refreshQueue = async.queue(function(file, cb) {
+				// Create read stream for the current file
+				var stream = fs.createReadStream(file);
+
+				stream.on('error', function(err) {
+					console.error('Reading metadata failed for', file + ':', err);
+					deferred.reject(err);
+				});
+
+				// Get metadata parser for the current file stream
+				var parser = mmd(stream);
+
+				// Listen for the metadata event to fire
+				parser.once('metadata', function(data) {
+					// Delete the picture property from the metadata,
+					// as we don't want to cache this in the database.
+					delete data.picture;
+
+					// Update the file's db entry metadata and call
+					// the queue callback when this operation finishes.
+					database.update(
+						{ file: file },
+						{ $set: { metadata: data } },
+						{},
+						cb);
+				});
+				// Listen for the parser to be done.
+				parser.once('done', function(err) {
+					// Only fire the callback here when there was an error
+					// reading the metadata. This is because if the metadata is read,
+					// both the 'metadata' and 'done' events fire, thus the callback
+					// would be called twice (which is illegal).
+					if(err) {
+						console.error(err, file);
+						cb();
+					}
+
+					// Destroy the stream when the parser is done to save strain on
+					// the file system.
+					stream.destroy();
+				});
+			}, CONCURRENCY);
+
+			// When the queue has completed:
+			refreshQueue.drain = function() {
+				// Log the time needed
+				console.timeEnd('refreshMetadata');
+				// Compact the database file
+				database.persistence.compactDatafile();
+				// Resolve the deferred with the array of changed files
+				deferred.resolve(files);
+			};
+
+			return refreshQueue;
+		}
 	};
 }
-
-module.exports = Library;
