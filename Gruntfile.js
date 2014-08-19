@@ -18,6 +18,9 @@ module.exports = function(grunt) {
 
 		sass: {
 			main: {
+				options: {
+					sourcemap: false
+				},
 				files: {
 					'<%= pkg.devConfig.clientDir %>css/main.css': '<%= pkg.devConfig.clientDir %>css/main.scss',
 					'<%= pkg.devConfig.clientDir %>fonts/fonts.css': '<%= pkg.devConfig.clientDir %>fonts/fonts.scss'
