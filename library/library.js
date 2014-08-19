@@ -119,7 +119,7 @@ function Library(lib_path, dbfile) {
 		 * @return {object} The async queue
 		 */
 		function createTimestampRefreshQueue(database, lib_path) {
-			console.time('checkAndUpdateTimestamps');
+			console.time('TimestampRefreshQueue');
 
 			var refreshQueue = async.queue(function refreshTimestamp(file, cb) {
 				fs.stat(file, function(err, stat) {
@@ -163,7 +163,8 @@ function Library(lib_path, dbfile) {
 			// - compact the database
 			// - resolve with an array of all changed files
 			refreshQueue.drain = function() {
-				console.timeEnd('checkAndUpdateTimestamp');
+				console.log('Refreshed timestamps.');
+				console.timeEnd('TimestampRefreshQueue');
 				database.persistence.compactDatafile();
 				deferred.resolve(changedFiles);
 			};
@@ -186,6 +187,8 @@ function Library(lib_path, dbfile) {
 		var total = files.length;
 		// Save current and previous percentages
 		var currPercentage, prevPercentage;
+
+		var refreshQueue = createMetadataRefreshQueue(database, files);
 		// Push all the changed files onto the queue
 		refreshQueue.push(files, function() {
 			// Compare previous and current percentage, then set previous percentage
@@ -207,8 +210,8 @@ function Library(lib_path, dbfile) {
 		 * 
 		 * @return {object} The async queue
 		 */
-		function createRefreshQueue(database, files) {
-			console.time('refreshMetadata');
+		function createMetadataRefreshQueue(database, files) {
+			console.time('MetadataRefreshQueue');
 
 			// Create the async queue to refresh the metadata
 			var refreshQueue = async.queue(function(file, cb) {
@@ -254,13 +257,10 @@ function Library(lib_path, dbfile) {
 				});
 			}, CONCURRENCY);
 
-			// When the queue has completed:
 			refreshQueue.drain = function() {
-				// Log the time needed
-				console.timeEnd('refreshMetadata');
-				// Compact the database file
+				console.log('Refreshed the metadata.');
+				console.timeEnd('MetadataRefreshQueue');
 				database.persistence.compactDatafile();
-				// Resolve the deferred with the array of changed files
 				deferred.resolve(files);
 			};
 
