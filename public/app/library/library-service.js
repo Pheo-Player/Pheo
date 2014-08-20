@@ -34,16 +34,18 @@ angular.module('pheoApp')
 
 		getLibrary()
 		.then(function(library) {
-			// Group all tracks in the library by album name
+			// Group all tracks in the library to an "album", by artist + album name
 			var albums = _.chain(library)
 			.groupBy(function(track) {
 				var album = track.metadata.album;
 				var artist = getActualArtist(
 					track.metadata.albumartist, track.metadata.artist);
 
-				// Concatenating artist and album name to have 'unique' identifiers
+				// Concatenate artist and album name to have 'unique' identifiers
 				return artist + '::' + album;
 			})
+			// Map each album array to an album object that holds basic info
+			// (artist/title/year), and sort its tracks
 			.map(function(tracks) {
 				// Pick the first track to read the metadata of the whole album from
 				var sampleTrack = tracks[0];
@@ -63,13 +65,12 @@ angular.module('pheoApp')
 					tracks: sortedTracks
 				};
 			})
+			// Sort all albums case-insensitively by artist, then album title
 			.sortBy(function(album) {
 				return album.artist.toLowerCase() + album.title.toLowerCase();
 			})
 			.value();
 
-			// Return the sorted album array,
-			// each album holding tracks sorted by title number
 			deferred.resolve(albums);
 		}, function(err) {
 			deferred.reject(err);
