@@ -1,14 +1,15 @@
 module.exports = function(config) {
 	config.set({
-		basePath: 'public/',
+		basePath: '',
 		frameworks: ['jasmine'],
 
 		files: [
-			'bower_components/lodash/dist/lodash.js',
-			'bower_components/angular/angular.min.js',
-			'bower_components/angular-mocks/angular-mocks.js',
-			'app/pheo-app.js',
-			'app/**/*.js'
+			'public/bower_components/lodash/dist/lodash.js',
+			'public/bower_components/angular/angular.min.js',
+			'public/bower_components/angular-mocks/angular-mocks.js',
+			'public/app/pheo-app.js',
+			'public/app/**/*.js',
+			'tests/client/**/*.js'
 		],
 
 		exclude: [],

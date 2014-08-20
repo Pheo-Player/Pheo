@@ -92,13 +92,13 @@ angular.module('pheoApp')
 
 					album.tracks.sort(function(a, b) {
 						var noA = a.metadata.track.no, noB = b.metadata.track.no;
-						var titleA = a.metadata.title, titleB = b.metadata.title;
+						var titleA = a.metadata.title.toLowerCase(), titleB = b.metadata.title.toLowerCase();
 
 						// first by track number, then by title
 						if(noA < noB) return -1;
 						if(noA > noB) return 1;
-						if(titleA > titleB) return -1;
-						if(titleA < titleB) return 1;
+						if(titleA > titleB) return 1;
+						if(titleA < titleB) return -1;
 
 						return 0;
 					});
