@@ -21,12 +21,15 @@ function Library(lib_path, dbfile) {
 
 	var self = this,
 	    CONCURRENCY = 5,
+	    publicFields = { metadata: 1 },
 
 	    database = null,
-	    initPromise = null;
+	    initDeferred = q.defer(),
+	    initPromise = initDeferred.promise;
 
 	// API
-	self.get = init; // Just tunnel get() to init() for now
+	self.get = getAll;
+	self.getOne = getOne;
 
 	// Create the library database object from the dbfile
 	database = getDatabase(dbfile);
@@ -52,29 +55,64 @@ function Library(lib_path, dbfile) {
 	};
 
 	/**
-	 * Initialises the database.
+	 * Initialises the database and resolves the init deferred on success.
 	 * 
 	 * @return {promise} A promise to initialise the database
 	 */
 	function init(database, lib_path) {
-		// If there is no currently running init promise, create one
-		if(!initPromise) {
-			var deferred = q.defer();
-			initPromise = deferred.promise;
+		// Check and update the timestamps,
+		// then refresh metadata in the db for all changed files
+		// When this is done, resolve with the initialised library object
+		checkAndUpdateTimestamps(database, lib_path)
+		.then(function refreshMeta(changedFiles) {
+			refreshMetadata(database, changedFiles)
+			.then(function initialised() {
+				initDeferred.resolve(database);
+			}, function(err) { initDeferred.reject(err); });
+		}, function(err) { initDeferred.reject(err); });
+	}
 
-			// Check and update the timestamps,
-			// then refresh metadata in the db for all changed files
-			// When this is done, resolve with the initialised library object
-			checkAndUpdateTimestamps(database, lib_path)
-			.then(function refreshMeta(changedFiles) {
-				refreshMetadata(database, changedFiles)
-				.then(function initialised() {
-					deferred.resolve(database);
-				}, function(err) { deferred.reject(err); });
-			}, function(err) { deferred.reject(err); });
-		}
+	/**
+	 * Gets all database entries
+	 * 
+	 * @return {promise} A promise to get all database entries
+	 */
+	function getAll() {
+		var deferred = q.defer();
 
-		return initPromise;
+		initPromise
+		.then(function(db) {
+			db.find({}, publicFields, function(err, data) {
+				if(err) deferred.reject(err);
+				else deferred.resolve(data);
+			});
+		}, function(err) {
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+	}
+
+	/**
+	 * Gets a single database entry by id
+	 * 
+	 * @param  {string} id The id of the database entry to return
+	 * @return {promise} A promise to get a single database entry
+	 */
+	function getOne(id) {
+		var deferred = q.defer();
+
+		initPromise
+		.then(function(db) {
+			db.findOne({ _id: id }, publicFields, function(err, data) {
+				if(err) deferred.reject(err);
+				else deferred.resolve(data);
+			});
+		}, function(err) {
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
 	}
 
 	/**

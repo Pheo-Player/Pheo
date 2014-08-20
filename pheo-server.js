@@ -7,10 +7,10 @@ function pheoServer() {
 	    fs = require('fs');
 
 	// local
-	var libraryApp = require('./library');
+	var libraryApp = require('./app/library');
 
 	/** Config **/
-	var conf = require('./config/nconf');
+	var conf = require('./app/config');
 	app.set('port', conf.get('port'));
 
 	/** Routes **/	
