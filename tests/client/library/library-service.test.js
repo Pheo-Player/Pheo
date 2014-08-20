@@ -74,11 +74,11 @@ describe('Library Service', function() {
 			httpMock.flush();
 		});
 
-		it('should sort the albums second by album name', function(done) {
+		it('should sort the albums second by album title', function(done) {
 			libSvc.getAlbums()
 			.then(function(albums) {
-				expect(albums[2].name).toEqual('');
-				expect(albums[3].name).toEqual('Unsorted Album')
+				expect(albums[2].title).toEqual('');
+				expect(albums[3].title).toEqual('Unsorted Album')
 			}).finally(done);
 
 			httpMock.flush();

@@ -34,7 +34,7 @@
 
 	<div ng-controller="LibraryController as libCtrl">
 		<ul ng-repeat="album in libCtrl.albums">
-			<li>{{album.artist}} &ndash; {{album.name}}</li>
+			<li>{{album.artist}} &ndash; {{album.title}}</li>
 
 			<ul ng-repeat="track in album.tracks">
 				<li>{{track.metadata.track.no}}. {{track.metadata.title}}</li>
