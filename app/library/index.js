@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
 
-    _ = require('lodash'),
+    _ = require('lodash-node/modern'),
 
     Library = require('./library'),
 
