@@ -1,6 +1,8 @@
 var express = require('express'),
     app = express(),
 
+    _ = require('lodash'),
+
     Library = require('./library'),
 
     nconf = require(__dirname + '/../config/nconf');
@@ -26,6 +28,13 @@ app.get('/library', function(req, res) {
 		store.find({}, function(err, data) {
 			if(err) endWithLibraryError(res);
 
+			_.forEach(data, function(entry) {
+				// Don't send this data, it is irrelevant to the user. In a sample
+				// dataset, the sent data size could be reduced by 37% with this
+				delete entry.file;
+				delete entry.mtime;
+			});
+
 			res.json(data);
 		});
 	});
@@ -35,6 +44,7 @@ app.get('/library', function(req, res) {
 app.get('/library/:id', function(req, res) {
 	library.get().findOne({ _id: req.params.id }, function(err, data) {
 		if(err) endWithLibraryError(res);
+
 		if(data === null) {
 			res.json({});
 		}
