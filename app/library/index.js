@@ -1,6 +1,9 @@
 var express = require('express'),
     app = express(),
 
+    fs = require('fs'),
+    path = require('path'),
+
     _ = require('lodash-node/modern'),
 
     Library = require('./library'),
@@ -18,10 +21,8 @@ var library = new Library(lib_path, dbfile);
 var publicFields = { "metadata": 1 };
 
 // We will reuse this function any time accessing the library fails
-function endWithLibraryError(res, err) {
-	var errorMsg = 'Error while reading library';
-	if(err) errorMsg += ": " + err;
-	res.status(500).end(errorMsg);
+function endWithError(err) {
+	this.status(500).end(err);
 }
 
 // INDEX action
@@ -29,9 +30,7 @@ app.get('/library', function(req, res) {
 	library.get()
 	.then(function(data) {
 		res.json(data);
-	}, function(err) {
-		endWithLibraryError(res, err);
-	});
+	}, endWithError.bind(res));
 });
 
 // READ action
@@ -40,9 +39,26 @@ app.get('/library/:id', function(req, res) {
 	.then(function(data) {
 		if(data === null) res.json({});
 		else res.json(data);
-	}, function(err) {
-		endWithLibraryError(res, err);
-	});
+	}, endWithError.bind(res));
+});
+
+// PLAY action
+app.get('/library/:id/play', function(req, res) {
+	library.getFilename(req.params.id)
+	.then(function(filePath) {
+		if(!filePath) res.status(404).end();
+
+		fs.stat(filePath, function(err, stat) {
+			if(err) throw err;
+
+			res.type(path.extname(filePath));
+			res.set({ 'Content-Length': stat.size });
+
+			var readStream = fs.createReadStream(filePath);
+			readStream.pipe(res);
+			readStream.on('error', endWithError.bind(res));
+		});
+	}, endWithError.bind(res));
 });
 
 module.exports = app;

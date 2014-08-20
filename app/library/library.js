@@ -30,6 +30,7 @@ function Library(lib_path, dbfile) {
 	// API
 	self.get = getAll;
 	self.getOne = getOne;
+	self.getFilename = getFilename;
 
 	// Create the library database object from the dbfile
 	database = getDatabase(dbfile);
@@ -57,7 +58,7 @@ function Library(lib_path, dbfile) {
 	/**
 	 * Initialises the database and resolves the init deferred on success.
 	 * 
-	 * @return {promise} A promise to initialise the database
+	 * @return {Promise} A promise to initialise the database
 	 */
 	function init(database, lib_path) {
 		// Check and update the timestamps,
@@ -75,7 +76,7 @@ function Library(lib_path, dbfile) {
 	/**
 	 * Gets all database entries
 	 * 
-	 * @return {promise} A promise to get all database entries
+	 * @return {Promise} A promise to get all database entries
 	 */
 	function getAll() {
 		var deferred = q.defer();
@@ -97,7 +98,7 @@ function Library(lib_path, dbfile) {
 	 * Gets a single database entry by id
 	 * 
 	 * @param  {string} id The id of the database entry to return
-	 * @return {promise} A promise to get a single database entry
+	 * @return {Promise} A promise to get a single database entry
 	 */
 	function getOne(id) {
 		var deferred = q.defer();
@@ -116,6 +117,27 @@ function Library(lib_path, dbfile) {
 	}
 
 	/**
+	 * Retrieves the filename for a given entry id
+	 * @param  {string} id The id of the entry
+	 * @return {Promise} A promise to get the filename of a single database entry
+	 */
+	function getFilename(id) {
+		var deferred = q.defer();
+
+		initPromise
+		.then(function(db) {
+			db.findOne({ _id: id }, function(err, data) {
+				if(err) deferred.reject(err);
+				else deferred.resolve(data && data.file);
+			});
+		}, function(err) {
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+	}
+
+	/**
 	 * Compares the stored mtime of all database entries with
 	 * the actual mtime of all music files in the library directory.
 	 * Resolves with an array of all changed files, and updates
@@ -123,7 +145,7 @@ function Library(lib_path, dbfile) {
 	 * 
 	 * @param  {object} database The library database
 	 * 
-	 * @return {promise} A promise that resolves with all changed files
+	 * @return {Promise} A promise that resolves with all changed files
 	 */
 	function checkAndUpdateTimestamps(database, lib_path) {
 		// TODO delete missing files from the database
@@ -177,7 +199,6 @@ function Library(lib_path, dbfile) {
 						if(!savedFile ||
 						(actualStamp.getTime() !== savedStamp.getTime()) ||
 						!savedFile.metadata) {
-
 							// TODO push files with missing metadata to a different array (?)
 							changedFiles.push(file);
 
@@ -192,7 +213,6 @@ function Library(lib_path, dbfile) {
 						// wait for the update operations to complete
 						cb();
 					});
-
 				});
 			}, CONCURRENCY);
 
@@ -215,7 +235,7 @@ function Library(lib_path, dbfile) {
 	 * Refreshes the metadata inside a db for a given array of files.
 	 * @param  {object} database The library datastore.
 	 * @param  {array} files The array of affected files
-	 * @return {promise} A promise to refresh the metadata, resolves with `files`.
+	 * @return {Promise} A promise to refresh the metadata, resolves with `files`.
 	 */
 	function refreshMetadata(database, files) {
 		// We return the promise of this deferred
