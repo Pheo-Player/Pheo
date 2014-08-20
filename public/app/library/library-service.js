@@ -1,9 +1,13 @@
 angular.module('pheoApp')
-.service('LibrarySvc', ['$q', '$http', function($q, $http) {
-	var self = this;
+.factory('LibrarySvc', ['$q', '$http', function($q, $http) {
 	var library;
 
-	self.getLibrary = function() {
+	return {
+		getLibrary: getLibrary,
+		getAlbums: getAlbums
+	};
+
+	function getLibrary() {
 		var deferred = $q.defer();
 
 		// If library has been fetched before, resolve with cached object
@@ -25,10 +29,10 @@ angular.module('pheoApp')
 	};
 
 	// TODO better logic for collaboration albums which don't have albumartist set
-	self.getAlbums = function() {
+	function getAlbums() {
 		var deferred = $q.defer();
 
-		self.getLibrary()
+		getLibrary()
 		.then(function(library) {
 			var albums = {};
 			var albumsSorted = [];
