@@ -1,7 +1,5 @@
 angular.module('pheoApp')
-.service('PlayerSvc', ['AudioAssetSvc', '$q', function (AudioAssetSvc, $q) {
-	var self = this;
-
+.factory('PlayerSvc', ['AudioAssetSvc', '$q', function (AudioAssetSvc, $q) {
 	// Keep reference to the AV.Player.
 	var player = null;
 
@@ -9,6 +7,13 @@ angular.module('pheoApp')
 	// We use this if the player.stop() and player.play() are called subsequently,
 	// as we will need to load the asset anew in this case.
 	var currentPath = '';
+
+	return {
+		loadFile: loadFile,
+		stop: stop,
+		playPause: playPause,
+		isPlaying: isPlaying
+	};
 
 	/**
 	 * Starts/resumes playback. This is a wrapper around AV.Player's play function
@@ -50,7 +55,7 @@ angular.module('pheoApp')
 	 * @param  {string} path The file's path as a simple string.
 	 * @param  {function} callback A function that will be called after the file is successfully loaded.
 	 */
-	this.loadFile = function(path) {
+	function loadFile(path) {
 		var deferred = $q.defer();
 
 		try {
@@ -79,7 +84,7 @@ angular.module('pheoApp')
 	 * Stops playback.
 	 * @return {boolean} If playback could be stopped.
 	 */
-	this.stop = function() {
+	function stop() {
 		if(player) {
 			player.stop();
 			return true;
@@ -91,7 +96,7 @@ angular.module('pheoApp')
 	/**
 	 * Toggles play/pause state of the current AV.Player.
 	 */
-	this.playPause = function() {
+	function playPause() {
 		if(player) {
 			if(player.playing)
 				player.pause(); // use the player's pause function.
@@ -117,7 +122,7 @@ angular.module('pheoApp')
 	 * Returns the play state of the current AV.Player
 	 * @return {Boolean} Play state of the current AV.Player
 	 */
-	this.isPlaying = function() {
+	function isPlaying() {
 		return player && player.playing;
 	};
 }]);
