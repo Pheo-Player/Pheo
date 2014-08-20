@@ -16,7 +16,7 @@
     "mime": "^1.2.11",
     "musicmetadata": "^0.4.4",
     "nconf": "^0.6.9",
-    "nedb": "0.10.6",
+    "nedb": "^0.10.11",
     "q": "^1.0.1"
   },
   "devDependencies": {
