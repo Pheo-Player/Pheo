@@ -6,6 +6,6 @@ public/app.js
 
 db/library.nedb
 db/library.nedb*
-config/config.json
+app/config/config.json
 
 *.map
