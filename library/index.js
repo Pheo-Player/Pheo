@@ -28,11 +28,12 @@ app.get('/library', function(req, res) {
 		store.find({}, function(err, data) {
 			if(err) endWithLibraryError(res);
 
+			// TODO possibly cache this
 			_.forEach(data, function(entry) {
 				// Don't send this data, it is irrelevant to the user. In a sample
 				// dataset, the sent data size could be reduced by 37% with this
-				delete entry.file;
-				delete entry.mtime;
+				entry.file = undefined;
+				entry.mtime = undefined;
 			});
 
 			res.json(data);
