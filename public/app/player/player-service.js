@@ -78,7 +78,7 @@ angular.module('pheoApp')
 		}
 
 		return deferred.promise;
-	};
+	}
 
 	/**
 	 * Stops playback.
@@ -91,7 +91,7 @@ angular.module('pheoApp')
 		}
 
 		return false;
-	};
+	}
 
 	/**
 	 * Toggles play/pause state of the current AV.Player.
@@ -116,7 +116,7 @@ angular.module('pheoApp')
 			// TODO
 			throw new Error('No player active!');
 		}
-	};
+	}
 
 	/**
 	 * Returns the play state of the current AV.Player
@@ -124,5 +124,5 @@ angular.module('pheoApp')
 	 */
 	function isPlaying() {
 		return player && player.playing;
-	};
+	}
 }]);

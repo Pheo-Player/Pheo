@@ -20,7 +20,7 @@ describe('Library Service', function() {
 	a3t2 = {"_id":"OstfriesenGold1a","metadata":{"title":"Ostfriesengold","artist":["Someone"],"albumartist":["Various Artists"],"album":"Nase","year":"2011","track":{"no":2,"of":2},"genre":["Some Hipster shit"],"disk":{"no":0,"of":0},"duration":0}},
 
 	a4t1 = {"_id":"ILikeToMakeUpIds","metadata":{"title":"Wurstwasser","artist":[],"albumartist":[],"album":"","year":"2011","track":{"no":0,"of":0},"genre":["Who knows"],"disk":{"no":0,"of":0},"duration":0}};
-	
+
 	// Mock library with random initial sorting
 	var mockLibrary = _.shuffle([a0t1, a0t2, a1t1, a2t1, a2t2, a3t1, a3t2, a4t1]);
 
