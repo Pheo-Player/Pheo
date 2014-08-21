@@ -32,14 +32,10 @@
 	<!-- Title Bar -->
 	<div id="title-bar"><div id="drag"></div><div id="actions"><button id="minimize-win"></button><button id="maximize-win"></button><button id="close-win"></button></div></div>
 
-	<div ng-controller="LibraryController as libCtrl">
-		<ul ng-repeat="album in libCtrl.albums">
-			<li>{{album.artist}} &ndash; {{album.title}}</li>
-
-			<ul ng-repeat="track in album.tracks">
-				<li>{{track.metadata.track.no}}. {{track.metadata.title}}</li>
-			</ul>
-		</ul>
+	<div id="content">
+		<div ng-controller="LibraryController as libCtrl">
+			<!-- libCtrl.albums -->
+		</div>
 	</div>
 
 	<!-- Aurora.js -->
