@@ -24,12 +24,16 @@ var publicFields = { "metadata": 1 };
 function endWithError(err) {
 	this.status(500).end(err);
 }
+function endWithNotFound(err) {
+	this.status(404).end(err);
+}
 
 // INDEX action
 app.get('/library', function(req, res) {
-	library.get()
+	library.getAll()
 	.then(function(data) {
-		res.json(data);
+		if(!data) res.json([]);
+		else res.json(data);
 	}, endWithError.bind(res));
 });
 
@@ -37,7 +41,7 @@ app.get('/library', function(req, res) {
 app.get('/library/:id', function(req, res) {
 	library.getOne(req.params.id)
 	.then(function(data) {
-		if(data === null) res.json({});
+		if(!data) res.json({});
 		else res.json(data);
 	}, endWithError.bind(res));
 });
@@ -46,10 +50,10 @@ app.get('/library/:id', function(req, res) {
 app.get('/library/:id/play', function(req, res) {
 	library.getFilename(req.params.id)
 	.then(function(filePath) {
-		if(!filePath) res.status(404).end();
+		if(!filePath) endWithNotFound.call(res);
 
 		fs.stat(filePath, function(err, stat) {
-			if(err) throw err;
+			if(err) endWithError.call(res, err);
 
 			res.type(path.extname(filePath));
 			res.set({ 'Content-Length': stat.size });
@@ -58,6 +62,27 @@ app.get('/library/:id/play', function(req, res) {
 			readStream.pipe(res);
 			readStream.on('error', endWithError.bind(res));
 		});
+	}, endWithError.bind(res));
+});
+
+// IMAGES action
+app.get('/library/:id/images', function(req, res) {
+	library.getImages(req.params.id)
+	.then(function(images) {
+		if(!images) endWithNotFound.call(res);
+
+		res.json({ count: images.length });
+	}, endWithError.bind(res));
+});
+
+// IMAGE action
+app.get('/library/:id/images/:imageid', function(req, res) {
+	library.getImage(req.params.id, req.params.imageid)
+	.then(function(image) {
+		if(!image) endWithNotFound.call(res);
+
+		res.type(image.format);
+		res.end(image.data);
 	}, endWithError.bind(res));
 });
 

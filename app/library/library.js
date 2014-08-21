@@ -28,9 +28,11 @@ function Library(lib_path, dbfile) {
 	    initPromise = initDeferred.promise;
 
 	// API
-	self.get = getAll;
+	self.getAll = getAll;
 	self.getOne = getOne;
 	self.getFilename = getFilename;
+	self.getImages = getImages;
+	self.getImage = getImage;
 
 	// Create the library database object from the dbfile
 	database = getDatabase(dbfile);
@@ -53,7 +55,7 @@ function Library(lib_path, dbfile) {
 		});
 
 		return database;
-	};
+	}
 
 	/**
 	 * Initialises the database and resolves the init deferred on success.
@@ -118,6 +120,7 @@ function Library(lib_path, dbfile) {
 
 	/**
 	 * Retrieves the filename for a given entry id
+	 * 
 	 * @param  {string} id The id of the entry
 	 * @return {Promise} A promise to get the filename of a single database entry
 	 */
@@ -138,13 +141,67 @@ function Library(lib_path, dbfile) {
 	}
 
 	/**
+	 * Gets an array of all images from an entry id.
+	 * 
+	 * @param  {string} id The id of the entry
+	 * @return {Promise} A promise to get all images from the given id.
+	 */
+	function getImages(id) {
+		var deferred = q.defer();
+
+		getFilename(id)
+		.then(function(filename) {
+			if(!filename) deferred.resolve(null);
+			else {
+				try {
+					var parser = mmd(fs.createReadStream(filename));
+
+					parser.on('metadata', function(metadata) {
+						var metaPictures = metadata.picture;
+
+						deferred.resolve(metaPictures);
+					});
+					parser.on('error', function(err) {
+						deferred.reject(err);
+					});
+				} catch(e) {
+					deferred.reject(e);
+				}
+			}
+		}, function(err) {
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+	}
+
+	/**
+	 * Gets a single image by index from an entry id.
+	 * 
+	 * @param  {string} id      The id of the entry
+	 * @param  {number} imageid The index of the image
+	 * @return {Promise} A promise to get a single image by index
+	 */
+	function getImage(id, imageid) {
+		var deferred = q.defer();
+
+		getImages(id)
+		.then(function(images) {
+			deferred.resolve(images && images[imageid-1]);
+		}, function(err) {
+			deferred.reject(err);
+		});
+
+		return deferred.promise;
+	}
+
+	/**
 	 * Compares the stored mtime of all database entries with
 	 * the actual mtime of all music files in the library directory.
 	 * Resolves with an array of all changed files, and updates
 	 * all differing timestamps in the database.
 	 * 
 	 * @param  {object} database The library database
-	 * 
 	 * @return {Promise} A promise that resolves with all changed files
 	 */
 	function checkAndUpdateTimestamps(database, lib_path) {
@@ -175,7 +232,6 @@ function Library(lib_path, dbfile) {
 		 * 
 		 * @param {object} database The database to refresh
 		 * @param {string} lib_path The library path to dive through
-		 * 
 		 * @return {object} The async queue
 		 */
 		function createTimestampRefreshQueue(database, lib_path) {
@@ -229,7 +285,7 @@ function Library(lib_path, dbfile) {
 
 			return refreshQueue;
 		}
-	};
+	}
 
 	/**
 	 * Refreshes the metadata inside a db for a given array of files.
@@ -265,7 +321,6 @@ function Library(lib_path, dbfile) {
 		 * @param {object} database The database to refresh
 		 * @param {array} files An array of files whose stored metadata
 		 * should be updated in the database
-		 * 
 		 * @return {object} The async queue
 		 */
 		function createMetadataRefreshQueue(database, files) {
@@ -324,5 +379,5 @@ function Library(lib_path, dbfile) {
 
 			return refreshQueue;
 		}
-	};
+	}
 }
