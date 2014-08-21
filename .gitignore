@@ -3,6 +3,7 @@ node_modules/
 
 public/bower_components/
 public/app.js
+public/css/main.css
 
 db/library.nedb
 db/library.nedb*
