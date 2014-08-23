@@ -36,6 +36,9 @@ angular.module('pheoApp')
 		.then(function(library) {
 			// Group all tracks in the library to an "album", by artist + album name
 			var albums = _.chain(library)
+			.reject(function(track) {
+				return !track.metadata;
+			})
 			.groupBy(function(track) {
 				var album = track.metadata.album;
 				var artist = getActualArtist(
