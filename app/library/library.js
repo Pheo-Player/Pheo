@@ -2,7 +2,10 @@ var Datastore = require('nedb'),
 
     fs = require('fs'),
     path = require('path'),
+    glob = require('glob'),
     dive = require('dive'),
+
+    _ = require('lodash-node/modern'),
 
     q = require('q'),
     async = require('async'),
@@ -31,7 +34,6 @@ function Library(lib_path, dbfile) {
 	self.getAll = getAll;
 	self.getOne = getOne;
 	self.getFilename = getFilename;
-	self.getImages = getImages;
 	self.getImage = getImage;
 
 	// Create the library database object from the dbfile
@@ -60,7 +62,7 @@ function Library(lib_path, dbfile) {
 	/**
 	 * Initialises the database and resolves the init deferred on success.
 	 * 
-	 * @return {Promise} A promise to initialise the database
+	 * @return {Promise} A promise
 	 */
 	function init(database, lib_path) {
 		// Check and update the timestamps,
@@ -78,7 +80,7 @@ function Library(lib_path, dbfile) {
 	/**
 	 * Gets all database entries
 	 * 
-	 * @return {Promise} A promise to get all database entries
+	 * @return {Promise} A promise
 	 */
 	function getAll() {
 		var deferred = q.defer();
@@ -87,7 +89,7 @@ function Library(lib_path, dbfile) {
 		.then(function(db) {
 			db.find({}, publicFields, function(err, data) {
 				if(err) deferred.reject(err);
-				else deferred.resolve(data);
+				deferred.resolve(data);
 			});
 		}, function(err) {
 			deferred.reject(err);
@@ -100,7 +102,7 @@ function Library(lib_path, dbfile) {
 	 * Gets a single database entry by id
 	 * 
 	 * @param  {string} id The id of the database entry to return
-	 * @return {Promise} A promise to get a single database entry
+	 * @return {Promise} A promise
 	 */
 	function getOne(id) {
 		var deferred = q.defer();
@@ -122,7 +124,7 @@ function Library(lib_path, dbfile) {
 	 * Retrieves the filename for a given entry id
 	 * 
 	 * @param  {string} id The id of the entry
-	 * @return {Promise} A promise to get the filename of a single database entry
+	 * @return {Promise} A promise
 	 */
 	function getFilename(id) {
 		var deferred = q.defer();
@@ -141,35 +143,20 @@ function Library(lib_path, dbfile) {
 	}
 
 	/**
-	 * Gets an array of all images from an entry id.
+	 * Gets the array of image information from an entry id.
 	 * 
 	 * @param  {string} id The id of the entry
-	 * @return {Promise} A promise to get all images from the given id.
+	 * @return {Promise} A promise
 	 */
-	function getImages(id) {
+	function getImageInfo(id) {
 		var deferred = q.defer();
 
-		getFilename(id)
-		.then(function(filename) {
-			if(!filename) deferred.resolve(null);
-			else {
-				try {
-					var parser = mmd(fs.createReadStream(filename));
-
-					parser.on('metadata', function(metadata) {
-						var metaPictures = metadata.picture;
-
-						deferred.resolve(metaPictures);
-					});
-					parser.on('error', function(err) {
-						deferred.reject(err);
-					});
-				} catch(e) {
-					deferred.reject(e);
-				}
-			}
-		}, function(err) {
-			deferred.reject(err);
+		initPromise
+		.then(function(db) {
+			db.findOne({ _id: id }, function(err, data) {
+				if(err) deferred.reject(err);
+				else deferred.resolve(data && data.images);
+			});
 		});
 
 		return deferred.promise;
@@ -180,17 +167,56 @@ function Library(lib_path, dbfile) {
 	 * 
 	 * @param  {string} id      The id of the entry
 	 * @param  {number} imageid The index of the image
-	 * @return {Promise} A promise to get a single image by index
+	 * @return {Promise} A promise
 	 */
 	function getImage(id, imageid) {
 		var deferred = q.defer();
 
-		getImages(id)
+		getImageInfo(id)
 		.then(function(images) {
-			deferred.resolve(images && images[imageid-1]);
-		}, function(err) {
-			deferred.reject(err);
-		});
+			var image = images[imageid];
+
+			if(!image) deferred.resolve(null);
+			// Image stored in file metadata
+			else if(image.in_file) {
+				getFilename(id)
+				.then(function(trackFilename) {
+					if(!trackFilename) deferred.resolve(null);
+					else {
+						var readStream = fs.createReadStream(trackFilename);
+						var parser = mmd(readStream);
+						parser.on('metadata', function(data) {
+							deferred.resolve(data.picture[image.index]);
+						});
+						parser.on('error', function(err) { deferred.reject(err); });
+					}
+				});
+			}
+			// External image file, stored in same folder as file
+			else if(image.filename) {
+				var imageFilename = image.filename;
+				if(!imageFilename) deferred.resolve(null);
+				// Stat to find out file size
+				fs.stat(imageFilename, function(err, stat) {
+					if(err) deferred.reject(err);
+					// Open file to read
+					fs.open(imageFilename, 'r', function(err, fd) {
+						if(err) deferred.reject(err);
+						// Read file to new buffer and resolve with this buffer
+						var buffer = new Buffer(stat.size);
+						fs.read(fd, buffer, 0, buffer.length, null,
+							function(err, bytesRead, buffer) {
+								deferred.resolve({
+									format: path.extname(imageFilename),
+									data: buffer
+								});
+							}
+						);
+					});
+				});
+			}
+			else { deferred.resolve(null); }
+		}, function(err) { deferred.reject(err); });
 
 		return deferred.promise;
 	}
@@ -202,7 +228,7 @@ function Library(lib_path, dbfile) {
 	 * all differing timestamps in the database.
 	 * 
 	 * @param  {object} database The library database
-	 * @return {Promise} A promise that resolves with all changed files
+	 * @return {Promise} A promise
 	 */
 	function checkAndUpdateTimestamps(database, lib_path) {
 		// TODO delete missing files from the database
@@ -291,7 +317,7 @@ function Library(lib_path, dbfile) {
 	 * Refreshes the metadata inside a db for a given array of files.
 	 * @param  {object} database The library datastore.
 	 * @param  {array} files The array of affected files
-	 * @return {Promise} A promise to refresh the metadata, resolves with `files`.
+	 * @return {Promise} A promise
 	 */
 	function refreshMetadata(database, files) {
 		// We return the promise of this deferred
@@ -341,15 +367,36 @@ function Library(lib_path, dbfile) {
 
 				// Listen for the metadata event to fire
 				parser.once('metadata', function(data) {
-					// Delete the picture property from the metadata,
-					// as we don't want to cache this in the database.
+					// Create an array of all image files that are either embedded in the
+					// metadata or located in the same directory as the track
+					var images = [];
+					_.times(data.picture.length, function(n) {
+						this.push({ in_file: true, index: n });
+					}, images);
+					var dir = path.dirname(file);
+					glob(dir + '/*.{jpg,png}', function(err, files) {
+						if (err) throw err;
+						// Map all filenames to a simple object
+						var imageFiles = _.map(files, function(file) {
+							return { filename: file };
+						});
+						// Prepend all imagefile objects to the images array
+						Array.prototype.unshift.apply(images, imageFiles);
+					});
+					// Delete the picture property before we store the metadata,
+					// as we don't want to save all pictures in the database. We'll
+					// instead store the image information as created above.
 					delete data.picture;
 
 					// Update the file's db entry metadata and call
 					// the queue callback when this operation finishes.
 					database.update(
 						{ file: file },
-						{ $set: { metadata: data } },
+						{$set: {
+							metadata: data,
+							images: images || undefined
+							// , imageCount: images.length
+						}},
 						{},
 						cb);
 				});

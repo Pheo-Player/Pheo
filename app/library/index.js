@@ -18,7 +18,7 @@ var dbfile = './' + nconf.get('dbfile'); // TODO this ain't nice
 if(!lib_path) throw new Error('lib_path is not set!');
 
 var library = new Library(lib_path, dbfile);
-var publicFields = { "metadata": 1 };
+var publicFields = { "metadata": 1, "pictureCount": 1 };
 
 // We will reuse this function any time accessing the library fails
 function endWithError(err) {
@@ -62,16 +62,6 @@ app.get('/library/:id/play', function(req, res) {
 			readStream.pipe(res);
 			readStream.on('error', endWithError.bind(res));
 		});
-	}, endWithError.bind(res));
-});
-
-// IMAGES action
-app.get('/library/:id/images', function(req, res) {
-	library.getImages(req.params.id)
-	.then(function(images) {
-		if(!images) endWithNotFound.call(res);
-
-		res.json({ count: images.length });
 	}, endWithError.bind(res));
 });
 
