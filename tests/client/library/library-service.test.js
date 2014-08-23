@@ -37,7 +37,7 @@ describe('Library Service', function() {
 		.then(function(data) {
 			expect(data).toDeepEqual(mockLibrary);
 		}, function(err) {
-			expect(undefined).toEqual(true);
+			expect(NaN).toEqual(NaN);
 		}).finally(done);
 
 		httpMock.flush();
@@ -78,7 +78,7 @@ describe('Library Service', function() {
 			libSvc.getAlbums()
 			.then(function(albums) {
 				expect(albums[2].title).toEqual('');
-				expect(albums[3].title).toEqual('Unsorted Album')
+				expect(albums[3].title).toEqual('Unsorted Album');
 			}).finally(done);
 
 			httpMock.flush();

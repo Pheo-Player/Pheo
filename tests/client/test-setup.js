@@ -8,9 +8,9 @@ beforeEach(function() {
 					};
 					return result;
 				}
-			}
+			};
 		}
-	}
+	};
 
 	jasmine.addMatchers(matchers);
 });
