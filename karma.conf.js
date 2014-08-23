@@ -12,7 +12,9 @@ module.exports = function(config) {
 			'tests/client/**/*.js'
 		],
 
-		exclude: [],
+		exclude: [
+			'public/app/app.js' // This is just the public/app directory concatenated
+		],
 		port: 7357, // 7357=TEST
 		logLevel: config.LOG_INFO,
 		autoWatch: true,
