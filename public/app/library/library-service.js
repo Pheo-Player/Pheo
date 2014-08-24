@@ -65,6 +65,7 @@ angular.module('pheoApp')
 						sampleTrack.metadata.albumartist, sampleTrack.metadata.artist),
 					title: sampleTrack.metadata.album,
 					year: sampleTrack.metadata.year,
+					imageCount: sampleTrack.imageCount,
 					tracks: sortedTracks
 				};
 			})

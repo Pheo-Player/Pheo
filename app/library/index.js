@@ -18,7 +18,6 @@ var dbfile = './' + nconf.get('dbfile'); // TODO this ain't nice
 if(!lib_path) throw new Error('lib_path is not set!');
 
 var library = new Library(lib_path, dbfile);
-var publicFields = { "metadata": 1, "pictureCount": 1 };
 
 // We will reuse this function any time accessing the library fails
 function endWithError(err) {
@@ -34,7 +33,7 @@ app.get('/library', function(req, res) {
 	.then(function(data) {
 		if(!data) res.json([]);
 		else res.json(data);
-	}, endWithError.bind(res));
+	}, _(endWithError).bind(res));
 });
 
 // READ action
@@ -43,7 +42,7 @@ app.get('/library/:id', function(req, res) {
 	.then(function(data) {
 		if(!data) res.json({});
 		else res.json(data);
-	}, endWithError.bind(res));
+	}, _(endWithError).bind(res));
 });
 
 // PLAY action
@@ -60,9 +59,9 @@ app.get('/library/:id/play', function(req, res) {
 
 			var readStream = fs.createReadStream(filePath);
 			readStream.pipe(res);
-			readStream.on('error', endWithError.bind(res));
+			readStream.on('error', _(endWithError).bind(res));
 		});
-	}, endWithError.bind(res));
+	}, _(endWithError).bind(res));
 });
 
 // IMAGE action
@@ -72,8 +71,9 @@ app.get('/library/:id/images/:imageid', function(req, res) {
 		if(!image) endWithNotFound.call(res);
 
 		res.type(image.format);
-		res.end(image.data);
-	}, endWithError.bind(res));
+		if(image.stream) image.stream.pipe(res);
+		else res.end(image.data);
+	}, _(endWithError).bind(res));
 });
 
 module.exports = app;

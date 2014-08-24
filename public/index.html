@@ -28,13 +28,15 @@
 	<script src="bower_components/angular/angular.js"></script>
 </head>
 
-<body ng-app="pheoApp">
+<body ng-app="pheoApp" class="dev">
 	<!-- Title Bar -->
 	<div id="title-bar"><div id="drag"></div><div id="actions"><button id="minimize-win"></button><button id="maximize-win"></button><button id="close-win"></button></div></div>
 
 	<div id="content">
 		<div ng-controller="LibraryController as libCtrl">
-			<!-- libCtrl.albums -->
+			<div ng-repeat="album in libCtrl.albums" class="album-thumb" ng-if="album.imageCount">
+				<img ng-src="/library/{{album.tracks[0]._id}}/images/0">
+			</div>
 		</div>
 	</div>
 

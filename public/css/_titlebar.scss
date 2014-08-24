@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+body.dev #title-bar { display: none; }
+
 #title-bar {
 	z-index: 10;
 	-webkit-user-select: none;

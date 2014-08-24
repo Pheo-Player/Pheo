@@ -24,7 +24,7 @@ function Library(lib_path, dbfile) {
 
 	var self = this,
 	    CONCURRENCY = 5,
-	    publicFields = { metadata: 1 },
+	    publicFields = { metadata: 1, imageCount: 1 },
 
 	    database = null,
 	    initDeferred = q.defer(),
@@ -196,24 +196,11 @@ function Library(lib_path, dbfile) {
 			else if(image.filename) {
 				var imageFilename = image.filename;
 				if(!imageFilename) deferred.resolve(null);
-				// Stat to find out file size
-				fs.stat(imageFilename, function(err, stat) {
-					if(err) deferred.reject(err);
-					// Open file to read
-					fs.open(imageFilename, 'r', function(err, fd) {
-						if(err) deferred.reject(err);
-						// Read file to new buffer and resolve with this buffer
-						var buffer = new Buffer(stat.size);
-						fs.read(fd, buffer, 0, buffer.length, null,
-							function(err, bytesRead, buffer) {
-								deferred.resolve({
-									format: path.extname(imageFilename),
-									data: buffer
-								});
-							}
-						);
-					});
-				});
+				var result = {
+					stream: fs.createReadStream(imageFilename),
+					format: path.extname(imageFilename)
+				};
+				deferred.resolve(result);
 			}
 			else { deferred.resolve(null); }
 		}, function(err) { deferred.reject(err); });
@@ -363,7 +350,7 @@ function Library(lib_path, dbfile) {
 				});
 
 				// Get metadata parser for the current file stream
-				var parser = mmd(stream);
+				var parser = mmd(stream, { duration: true });
 
 				// Listen for the metadata event to fire
 				parser.once('metadata', function(data) {
@@ -394,11 +381,10 @@ function Library(lib_path, dbfile) {
 						{ file: file },
 						{$set: {
 							metadata: data,
-							images: images || undefined
-							// , imageCount: images.length
+							images: images || undefined,
+							imageCount: images.length || undefined
 						}},
-						{},
-						cb);
+						{});
 				});
 				// Listen for the parser to be done.
 				parser.once('done', function(err) {
@@ -408,8 +394,10 @@ function Library(lib_path, dbfile) {
 					// would be called twice (which is illegal).
 					if(err) {
 						console.error(err, file);
-						cb();
+						
 					}
+
+					cb();
 
 					// Destroy the stream when the parser is done to save strain on
 					// the file system.

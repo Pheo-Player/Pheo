@@ -20,17 +20,31 @@
 body {
 	font-family: "Roboto";
 	overflow: hidden;
-}
-#content {
-	position: absolute;
 
-	top: $titlebar-height;
-	bottom: $playbar-height;
-	height: calc(100% - #{$titlebar-height + $playbar-height});
+	#content {
+		position: absolute;
 
-	padding-bottom: $default-padding;
+		top: $titlebar-height;
+		bottom: $playbar-height;
+		height: calc(100% - #{$titlebar-height + $playbar-height});
 
-	overflow: hidden;
+		padding-bottom: $default-padding;
+
+		overflow: hidden;
+	}
+
+	&.dev {
+		overflow: visible;
+
+		#content {
+			top: 0;
+			bottom: 0;
+			width: 100%;
+			height: 100%;
+			padding-bottom: 0;
+			overflow: visible;
+		}
+	}
 }
 
 // PARTIAL IMPORTS
@@ -39,5 +53,7 @@ body {
 @import "headers";
 @import "menu";
 @import "content";
+
+@import "albums/albums";
 
 @import "fixes";

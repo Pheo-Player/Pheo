@@ -1,0 +1,12 @@
+.album-thumb {
+	display: inline-block;
+
+	width: 150px;
+	height: 150px;
+	overflow: hidden;
+
+	img {
+		width: 150px;
+		height: auto;
+	}
+}
